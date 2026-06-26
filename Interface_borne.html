@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Refeel - Fraîcheur Fruitée</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* VARIABLES */
+        :root {
+            --mint: #3DD9BC;
+            --mint-dark: #22B89E;
+            --dark: #0D1F1C;
+            --bg-light: #F0F9F7;
+            --wave-h: 220px; /* hauteur vague — surchargée par media queries */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+
+        body, html {
+            width: 100%; height: 100%;
+            overflow: hidden;
+            background: var(--bg-light);
+            font-family: "Plus Jakarta Sans", sans-serif;
+            color: var(--dark);
+        }
+
+        /* NAVIGATION */
+        .screen {
+            position: absolute; inset: 0;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; flex-direction: column;
+            z-index: 5;
+        }
+        .screen.active { opacity: 1; pointer-events: all; }
+
+        /* VAGUES */
+        .ocean-footer {
+            height: var(--wave-h);
+            width: 100%; position: absolute; bottom: 0; left: 0;
+            z-index: 2; overflow: hidden;
+        }
+        .wave-svg {
+            position: absolute; bottom: 0; left: 0;
+            width: 200%; height: 100%;
+            animation: wave-slide 10s linear infinite;
+        }
+        @keyframes wave-slide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-50%); }
+        }
+
+        /* ── S1 : ACCUEIL ── */
+        /* padding-bottom = vague + stats-strip + petit gap */
+        #s1 {
+            align-items: center; justify-content: center;
+            text-align: center;
+            padding-bottom: calc(var(--wave-h) + 90px);
+        }
+
+        .logo-box { z-index: 10; margin-bottom: clamp(12px, 2.2vh, 36px); }
+        .logo-img { width: clamp(200px, 26vw, 460px); max-width: 80vw; height: auto; display: block; margin: 0 auto; }
+
+        .s1-copy {
+            z-index: 10;
+            font-size: clamp(20px, 2.6vw, 44px);
+            font-weight: 800; margin-bottom: clamp(20px, 3.8vh, 54px);
+            line-height: 1.2; color: var(--dark); padding: 0 16px;
+        }
+        .s1-copy span {
+            display: block;
+            font-size: clamp(13px, 1.3vw, 22px);
+            font-weight: 500; color: var(--mint-dark);
+            margin-top: clamp(8px, 1vh, 14px); opacity: 0.9;
+        }
+
+        /* BOUTON SERVIR */
+        .liquid-button {
+            position: relative;
+            width: clamp(130px, 13vw, 220px);
+            height: clamp(130px, 13vw, 220px);
+            background: #E0F2F0; border-radius: 50%; border: none; cursor: pointer;
+            overflow: hidden; z-index: 10;
+            display: flex; align-items: center; justify-content: center;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 15px 35px rgba(61, 217, 188, 0.25);
+        }
+        .liquid-button:active { transform: scale(0.9); }
+
+        .button-fill {
+            position: absolute; bottom: 0; left: 0;
+            width: 100%; height: 35%;
+            background: var(--mint); transition: height 0.4s ease; z-index: 1;
+        }
+        .button-fill::before {
+            content: "";
+            position: absolute; top: -15px; left: 0;
+            width: 200%; height: 20px;
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C150,100 350,0 500,50 C650,100 850,0 1000,50 L1000,100 L0,100 Z' fill='%233DD9BC'/%3E%3C/svg%3E") repeat-x;
+            background-size: 50% 100%;
+            animation: inner-wave 2s linear infinite;
+        }
+        @keyframes inner-wave {
+            from { transform: translateX(0); }
+            to   { transform: translateX(-50%); }
+        }
+        .btn-label { position: relative; z-index: 2; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: clamp(12px, 1vw, 16px); color: var(--dark); }
+
+        /* BARRE DE STATS (S1) — centrée, flotte juste au-dessus des vagues */
+        .stats-strip {
+            position: absolute;
+            bottom: calc(var(--wave-h) + 16px);
+            left: 50%; transform: translateX(-50%);
+            z-index: 12;
+            display: flex; align-items: center;
+            background: rgba(255,255,255,0.78);
+            -webkit-backdrop-filter: blur(22px) saturate(1.5);
+            backdrop-filter: blur(22px) saturate(1.5);
+            border: 1px solid rgba(255,255,255,0.9);
+            border-radius: 28px; padding: 9px;
+            box-shadow: 0 12px 36px rgba(13,31,28,0.10), 0 2px 8px rgba(61,217,188,0.07);
+            white-space: nowrap;
+        }
+        .ss-item { display: flex; align-items: center; gap: 10px; padding: 4px clamp(12px, 1.6vw, 22px); }
+        .ss-item.ss-main { padding-left: 6px; }
+        .ss-icon-wrap {
+            width: clamp(38px, 3.6vw, 50px); height: clamp(38px, 3.6vw, 50px);
+            border-radius: 50%; background: var(--mint);
+            display: flex; align-items: center; justify-content: center;
+            font-size: clamp(18px, 1.8vw, 24px);
+            box-shadow: 0 6px 16px rgba(61,217,188,0.38); flex-shrink: 0;
+        }
+        .ss-data { display: flex; flex-direction: column; align-items: flex-start; }
+        .ss-item strong { font-size: clamp(16px, 1.8vw, 26px); font-weight: 800; line-height: 1; color: var(--dark); letter-spacing: -0.5px; display: block; }
+        .ss-item.ss-main strong { font-size: clamp(22px, 2.4vw, 34px); letter-spacing: -1.2px; }
+        .ss-item span { font-size: clamp(9px, 0.7vw, 11px); font-weight: 600; color: var(--mint-dark); margin-top: 3px; display: block; }
+        .ss-divider { width: 1px; height: clamp(34px, 3.5vw, 48px); background: rgba(61, 217, 188, 0.22); flex-shrink: 0; }
+
+        /* ── S2 : SAVEURS ── */
+        #s2 { padding: clamp(20px, 2.8vh, 36px) clamp(28px, 4vw, 70px) clamp(20px, 2.8vh, 46px); }
+        .s2-header h2 { font-size: clamp(26px, 3.2vw, 46px); font-weight: 800; margin-bottom: 8px; }
+
+        /* Grille fluide : jamais plus large que l'écran */
+        .flavor-grid {
+            display: grid;
+            grid-template-columns: repeat(3, clamp(130px, 21vw, 320px));
+            justify-content: center; align-content: center;
+            gap: clamp(14px, 2.2vh, 38px) clamp(18px, 3.5vw, 70px);
+            flex: 1;
+        }
+
+        /* Animation flottaison */
+        @keyframes float-card {
+            0%, 100% { transform: translateY(0); }
+            50%       { transform: translateY(-13px); }
+        }
+        .flavor-card { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; animation: float-card 3.4s ease-in-out infinite; }
+        .flavor-card:nth-child(1) { animation-delay: 0s; }
+        .flavor-card:nth-child(2) { animation-delay: 0.45s; }
+        .flavor-card:nth-child(3) { animation-delay: 0.9s; }
+        .flavor-card:nth-child(4) { animation-delay: 0.22s; }
+        .flavor-card:nth-child(5) { animation-delay: 0.67s; }
+        .flavor-card:nth-child(6) { animation-delay: 1.12s; }
+        .flavor-card:active { animation-play-state: paused; }
+
+        .flavor-circle { width: 100%; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden; position: relative; border: 4px solid #fff; box-shadow: 0 14px 30px rgba(13,31,28,0.13); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
+        .flavor-card:active .flavor-circle { transform: scale(0.92); }
+        .flavor-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .flavor-text { text-align: center; }
+        .flavor-name { font-size: clamp(13px, 1.3vw, 19px); font-weight: 800; color: var(--dark); line-height: 1.1; }
+        .flavor-tagline { font-size: clamp(9px, 0.7vw, 11px); font-weight: 600; color: var(--mint-dark); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+        /* ── S3 : PAIEMENT ── */
+        #s3 { align-items: center; justify-content: center; padding: 40px; }
+        .pay-module { background: white; padding: clamp(28px, 3.5vw, 50px); border-radius: 40px; text-align: center; width: 100%; max-width: clamp(320px, 38vw, 520px); }
+        .pay-flavor-img {
+            width: clamp(110px, 12vw, 150px);
+            height: clamp(110px, 12vw, 150px);
+            border-radius: 50%;
+            overflow: hidden;
+            margin: 0 auto clamp(16px, 2vh, 24px);
+            border: 4px solid var(--bg-light);
+            box-shadow: 0 14px 34px rgba(13,31,28,0.16);
+            background: #e0f2f0;
+        }
+        .pay-flavor-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
+        .pay-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
+        .method-item { background: #f0f4f3; padding: 20px 10px; border-radius: 20px; font-weight: 700; font-size: clamp(11px, 1vw, 14px); cursor: pointer; }
+
+        /* ── S4 : REMPLISSAGE ── */
+        #s4 { align-items: center; justify-content: center; background: #fff; }
+        .filling-container { text-align: center; z-index: 10; }
+        .glass-container { position: relative; width: 180px; height: 280px; margin: 0 auto 40px; }
+        .glass-silhouette { position: absolute; inset: 0; border: 3px solid rgba(0,0,0,0.05); border-radius: 10px 10px 60px 60px; z-index: 2; }
+        .liquid-fill { position: absolute; bottom: 10px; left: 10px; right: 10px; height: 0%; background: var(--mint); border-radius: 0 0 50px 50px; transition: height 0.1s linear; overflow: hidden; }
+        .liquid-wave { position: absolute; top: -20px; left: -50%; width: 200%; height: 40px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C150,100 350,0 500,50 C650,100 850,0 1000,50 L1000,100 L0,100 Z' fill='white' opacity='0.3'/%3E%3C/svg%3E") repeat-x; background-size: 50% 100%; animation: inner-wave 2s linear infinite; }
+        .progress-circle-box { position: relative; width: 120px; height: 120px; margin: 0 auto; }
+        .circle-svg { transform: rotate(-90deg); }
+        .circle-bg { fill: none; stroke: #f0f0f0; stroke-width: 8; }
+        .circle-bar { fill: none; stroke: var(--mint); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 314; transition: stroke-dashoffset 0.1s linear; }
+        .timer-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: var(--dark); }
+        .filling-label { margin-top: 20px; font-size: 18px; font-weight: 700; color: var(--mint-dark); letter-spacing: 1px; text-transform: uppercase; }
+
+        /* ── S5 : FIN ── */
+        #s5 { align-items: center; justify-content: center; background: var(--bg-light); text-align: center; }
+        .success-icon { font-size: 80px; margin-bottom: 20px; animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        @keyframes bounceIn { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        .thanks-title { font-size: clamp(30px, 3.8vw, 56px); font-weight: 900; color: var(--dark); margin-bottom: 10px; }
+        .thanks-sub { font-size: clamp(14px, 1.4vw, 20px); color: var(--mint-dark); font-weight: 600; margin-bottom: 30px; opacity: 0.8; }
+        .impact-badge { display: inline-flex; align-items: center; gap: 14px; background: var(--mint); color: var(--dark); padding: 16px 28px; border-radius: 100px; margin-bottom: 40px; box-shadow: 0 14px 34px rgba(61,217,188,0.38); animation: badgePop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) 0.35s both; }
+        .impact-badge .badge-icon { font-size: 30px; line-height: 1; }
+        .impact-badge .badge-text { text-align: left; }
+        .impact-badge .badge-text strong { display: block; font-size: 16px; font-weight: 800; }
+        .impact-badge .badge-text small { font-size: 12px; font-weight: 600; opacity: 0.65; }
+        @keyframes badgePop { 0% { transform: scale(0.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        .finish-btn { background: var(--dark); color: white; padding: clamp(16px, 2vh, 22px) clamp(40px, 5vw, 60px); border-radius: 100px; font-weight: 800; font-size: clamp(14px, 1.2vw, 16px); border: none; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; }
+        .finish-btn:active { transform: scale(0.95); }
+
+        /* BOUTON RETOUR */
+        .back-circle { position: absolute; top: 26px; left: 26px; width: clamp(44px, 4vw, 56px); height: clamp(44px, 4vw, 56px); background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 100; font-weight: 800; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; }
+
+        /* ══ BREAKPOINTS LARGEUR : ajustement de --wave-h et layout ══ */
+
+        /* Tablette (768–1199px) */
+        @media (min-width: 768px) and (max-width: 1199px) {
+            :root { --wave-h: 200px; }
+        }
+
+        /* Desktop (1200px+) */
+        @media (min-width: 1200px) {
+            :root { --wave-h: 240px; }
+        }
+
+        /* ══ BREAKPOINT HAUTEUR : laptops / tablettes paysage courts ══ */
+        /* Ici --wave-h est réduit pour libérer de la place */
+        @media (max-height: 820px) and (min-width: 700px) {
+            :root { --wave-h: 150px; }
+            #s1 { padding-bottom: calc(var(--wave-h) + 80px); }
+            .logo-box { margin-bottom: 10px; }
+            #s2 { padding: 12px clamp(28px, 4vw, 60px) 16px; }
+            .s2-header h2 { margin-bottom: 4px; }
+        }
+
+        /* Très court (ex: 600px) : masquer la stats-strip pour éviter tout chevauchement */
+        @media (max-height: 640px) {
+            .stats-strip { display: none; }
+        }
+
+        /* ══ HOVER SOURIS ══ */
+        @media (hover: hover) {
+            .flavor-card:hover { animation-play-state: paused; }
+            .flavor-card:hover .flavor-circle { transform: scale(1.06); }
+            .method-item:hover { background: #d8edea; }
+            .finish-btn:hover { transform: scale(1.03); }
+            .back-circle:hover { background: var(--bg-light); }
+            .liquid-button:hover { box-shadow: 0 20px 48px rgba(61, 217, 188, 0.4); }
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- S1 : ACCUEIL -->
+    <div class="screen active" id="s1">
+
+        <!-- VAGUES ANIMÉES — écran 1 uniquement -->
+        <div class="ocean-footer">
+            <svg class="wave-svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
+                <path d="M0,50 C150,90 350,10 500,50 C650,90 850,10 1000,50 L1000,100 L0,100 Z" fill="rgba(61, 217, 188, 0.08)"></path>
+            </svg>
+            <svg class="wave-svg" style="animation-duration: 7s; opacity: 0.3;" viewBox="0 0 1000 100" preserveAspectRatio="none">
+                <path d="M0,50 C150,10 350,90 500,50 C650,10 850,90 1000,50 L1000,100 L0,100 Z" fill="rgba(61, 217, 188, 0.15)"></path>
+            </svg>
+            <svg class="wave-svg" style="animation-duration: 5s; height: 120px;" viewBox="0 0 1000 100" preserveAspectRatio="none">
+                <path d="M0,50 C150,100 350,0 500,50 C650,100 850,0 1000,50 L1000,100 L0,100 Z" fill="var(--mint)"></path>
+            </svg>
+        </div>
+
+        <div class="logo-box">
+            <!-- Utilisation du fichier image local -->
+            <img src="Logo Refeel®.png" class="logo-img" alt="Refeel" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+            <div style="display:none; font-size: 64px; font-weight: 900; color: var(--mint); letter-spacing: -2px;">Refeel®</div>
+        </div>
+        
+        <div class="s1-copy">
+            Ton coup de frais. 0% sucre,<br>
+            <span>Le plaisir du sirop, la légèreté de l'eau.</span>
+        </div>
+
+        <button class="liquid-button" onclick="goto(2)">
+            <div class="button-fill" id="btn-fill"></div>
+            <span class="btn-label">Servir</span>
+        </button>
+        
+        <div class="stats-strip">
+            <div class="ss-item ss-main">
+                <div class="ss-icon-wrap">🥤</div>
+                <div class="ss-data">
+                    <strong id="cup-count">47</strong>
+                    <span>gobelets consignés</span>
+                </div>
+            </div>
+            <div class="ss-divider"></div>
+            <div class="ss-item">
+                <div class="ss-data">
+                    <strong>&lt;60km</strong>
+                    <span>producteur local</span>
+                </div>
+            </div>
+            <div class="ss-divider"></div>
+            <div class="ss-item">
+                <div class="ss-data">
+                    <strong>0g sucre</strong>
+                    <span>ajouté</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S2 : SAVEURS -->
+    <div class="screen" id="s2">
+        <div class="back-circle" onclick="goto(1)">←</div>
+        <div class="s2-header">
+            <h2>Quelle <span style="color:var(--mint)">fraîcheur</span> ?</h2>
+        </div>
+        <div class="flavor-grid" id="flavor-list"></div>
+    </div>
+
+    <!-- S3 : PAIEMENT -->
+    <div class="screen" id="s3">
+        <div class="back-circle" onclick="goto(2)">←</div>
+        <div class="pay-module">
+            <div class="pay-flavor-img" id="pay-flavor-wrap">
+                <img id="pay-img" src="" alt="">
+            </div>
+            <h2 id="pay-name" style="font-size: clamp(20px, 2.2vw, 28px); font-weight: 800;">-</h2>
+            <p style="color: var(--mint-dark); font-weight: 700; margin-top: 5px;">0,40€</p>
+            <div class="pay-methods">
+                <div class="method-item" onclick="startServe()">SANS CONTACT</div>
+                <div class="method-item" onclick="startServe()">CARTE</div>
+                <div class="method-item" onclick="startServe()">BADGE</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- S4 : REMPLISSAGE -->
+    <div class="screen" id="s4">
+        <div class="filling-container">
+            <div class="glass-container">
+                <div class="glass-silhouette"></div>
+                <div class="liquid-fill" id="liquid-fill">
+                    <div class="liquid-wave"></div>
+                </div>
+            </div>
+            
+            <div class="progress-circle-box">
+                <svg class="circle-svg" width="120" height="120">
+                    <circle class="circle-bg" cx="60" cy="60" r="50"></circle>
+                    <circle class="circle-bar" id="circle-bar" cx="60" cy="60" r="50"></circle>
+                </svg>
+                <div class="timer-text" id="counter">6</div>
+            </div>
+            
+            <p class="filling-label">Préparation en cours</p>
+        </div>
+    </div>
+
+    <!-- S5 : FIN -->
+    <div class="screen" id="s5">
+        <div class="success-icon" id="finish-emoji">🍹</div>
+        <h1 class="thanks-title">C'est prêt !</h1>
+        <p class="thanks-sub">Déguste ta boisson bien fraîche.</p>
+
+        <div class="impact-badge">
+            <span class="badge-icon">🌍</span>
+            <div class="badge-text">
+                <strong>1 bouteille plastique évitée</strong>
+                <small>Bravo — le geste compte.</small>
+            </div>
+        </div>
+
+        <button class="finish-btn" onclick="goto(1)">RETOUR À L'ACCUEIL</button>
+        
+        <p style="position:absolute; bottom: 40px; left:0; right:0; font-size: 14px; font-weight: 700; color: var(--mint-dark);">#RefeelYourDay</p>
+    </div>
+
+    <script>
+        const DATA = [
+            { name: "Citron Gingembre", emoji: "🍋", color: "#FDE047", desc: "Vif, épicé, tonique. Le coup de fouet du matin.", tags: ["Sans sucre", "Naturel"], img: "https://thumbs.dreamstime.com/b/cocktail-au-citron-vert-rafra%C3%AEchissant-avec-de-la-glace-431790760.jpg" },
+            { name: "Hibiscus", emoji: "🌺", color: "#EF4444", desc: "Floral, acidulé, antioxydant. Riche en vitamine C.", tags: ["Antioxydant", "Vitamine C"], img: "https://thumbs.dreamstime.com/b/boisson-rafra%C3%AEchissante-au-th%C3%A9-glac%C3%A9-hibiscus-rouge-garnie-de-feuilles-menthe-et-fleurs-d-%C3%A9t%C3%A9-parfaite-id%C3%A9al-pour-un-une-348014080.jpg" },
+            { name: "Menthe Fraîche", emoji: "🍃", color: "#3DD9BC", desc: "Fraîche, pure, revitalisante. L'hydratation ultime.", tags: ["Digestion", "Ultra frais"], img: "https://media.istockphoto.com/id/183783284/fr/photo/la-menthe-fra%C3%AEche.jpg?s=612x612&w=0&k=20&c=Snu2aMOKwJJqOfr3frdV-ego7FWaaeknh8XgsRsyH3A=" },
+            { name: "Agrumes", emoji: "🍊", color: "#F97316", desc: "Orange, citron, pamplemousse. Un soleil en bouteille.", tags: ["Vitamine C", "Pep's"], img: "https://media.istockphoto.com/id/179210275/photo/oranges-in-water.jpg?s=612x612&w=0&k=20&c=R5hw3Su-xeKSi9sQ9CLob4OInnFlPW-bCzMav6T4FP4=" },
+            { name: "Fruits Rouges", emoji: "🍓", color: "#991B1B", desc: "Cassis, framboise, myrtille. Riche et profond.", tags: ["Antioxydant", "Local"], img: "https://img.freepik.com/photos-premium/boisson-aux-fruits-rafraichissante-froide-baies-groseilles-rouges-dans-flute-verre-transparent-glace-fruits-au-citron-vert-table-bois-clair-fond-blanc_654281-71.jpg" },
+            { name: "Pomme Cannelle", emoji: "🍏", color: "#84CC16", desc: "Doux, réconfortant, parfait après l'effort.", tags: ["Énergie douce", "Hiver"], img: "https://media.istockphoto.com/id/1473429125/fr/photo/pomme-fra%C3%AEche-avec-%C3%A9claboussure-de-jus-de-pomme.jpg?s=612x612&w=0&k=20&c=GEWj2bhxx0xUe2JA-p3Je12uo1afzWX42vldJCT9me4=" }
+        ];
+
+        const grid = document.getElementById('flavor-list');
+        DATA.forEach(f => {
+            const card = document.createElement('div');
+            card.className = 'flavor-card';
+            card.innerHTML = `<div class="flavor-circle" style="background:${f.color}"><img src="${f.img}" alt="${f.name}" onerror="this.style.display='none'"></div><div class="flavor-text"><div class="flavor-name">${f.name}</div><div class="flavor-tagline">${f.tags.join(' · ')}</div></div>`;
+            card.onclick = () => {
+                document.getElementById('pay-name').innerText = f.name;
+                document.getElementById('pay-img').src = f.img;
+                document.getElementById('pay-img').alt = f.name;
+                document.getElementById('pay-flavor-wrap').style.backgroundColor = f.color;
+                document.getElementById('liquid-fill').style.backgroundColor = f.color;
+                document.getElementById('finish-emoji').innerText = f.emoji;
+                goto(3);
+            };
+            grid.appendChild(card);
+        });
+
+        function goto(n) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+            document.getElementById('s' + n).classList.add('active');
+            if(n === 1) {
+                document.getElementById('btn-fill').style.height = '35%';
+            }
+        }
+
+        function startServe() {
+            goto(4);
+            let pct = 0;
+            let time = 6;
+            const liquid = document.getElementById('liquid-fill');
+            const circle = document.getElementById('circle-bar');
+            const count = document.getElementById('counter');
+            
+            const totalDash = 314;
+            circle.style.strokeDashoffset = totalDash;
+
+            const timer = setInterval(() => {
+                pct += 1;
+                liquid.style.height = (pct * 0.9) + '%';
+                const offset = totalDash - (pct / 100) * totalDash;
+                circle.style.strokeDashoffset = offset;
+
+                if (pct % 16 === 0) {
+                    time--;
+                    count.innerText = Math.max(time, 0);
+                }
+
+                if (pct >= 100) {
+                    clearInterval(timer);
+                    setTimeout(() => goto(5), 800);
+                }
+            }, 60);
+        }
+
+        const liquidBtn = document.querySelector('.liquid-button');
+        const btnFill = document.getElementById('btn-fill');
+        liquidBtn.addEventListener('mouseenter', () => btnFill.style.height = '100%');
+        liquidBtn.addEventListener('mouseleave', () => btnFill.style.height = '35%');
+    </script>
+</body>
+</html>
