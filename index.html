@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <!-- Balises d'intégration iOS pour un plein écran absolu sans barre d'adresse si installé sur l'écran d'accueil -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Refeel">
     <title>Refeel - Fraîcheur Fruitée</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -25,12 +29,14 @@
 
         body, html {
             width: 100%; 
-            height: 100%;
+            height: 100dvh; /* Utilisation de la hauteur de viewport dynamique pour contrer Safari */
             overflow: hidden;
             background: var(--bg-light);
             font-family: "Plus Jakarta Sans", sans-serif;
             color: var(--dark);
         }
+
+        /* */
 
         /* SYSTÈME DE TOAST NOTIFICATION */
         .custom-toast {
@@ -98,10 +104,13 @@
             50% { transform: rotate(-90deg); }
         }
 
+        /* */
+
         /* NAVIGATION DES ÉCRANS */
         .screen {
             position: absolute; 
             inset: 0;
+            height: 100dvh;
             opacity: 0; 
             pointer-events: none;
             transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
@@ -109,6 +118,7 @@
             flex-direction: column;
             z-index: 5;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            box-sizing: border-box;
         }
         .screen.active { 
             opacity: 1; 
@@ -139,6 +149,8 @@
             100% { transform: translateX(-50%); }
         }
 
+        /* */
+
         /* S1 : ACCUEIL */
         #s1 {
             align-items: center; 
@@ -147,8 +159,14 @@
             padding-bottom: calc(var(--wave-h) + 60px);
         }
 
+        .s1-header-block {
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         .logo-box { 
-            z-index: 10; 
             margin-bottom: clamp(10px, 2vh, 30px); 
         }
         .logo-img { 
@@ -160,7 +178,6 @@
         }
 
         .s1-copy {
-            z-index: 10;
             font-size: clamp(16px, 2.2vw, 36px);
             font-weight: 800; 
             margin-bottom: clamp(15px, 3vh, 45px);
@@ -228,6 +245,8 @@
             font-size: clamp(10px, 0.9vw, 14px); 
             color: var(--dark); 
         }
+
+        /* */
 
         /* BARRE DE STATS (S1) */
         .stats-strip {
@@ -377,6 +396,8 @@
             letter-spacing: 0.4px; 
         }
 
+        /* */
+
         /* S3 : PAIEMENT */
         #s3 { 
             align-items: center; 
@@ -512,6 +533,8 @@
             font-weight: 600;
         }
 
+        /* */
+
         /* S4 : REMPLISSAGE */
         #s4 { 
             align-items: center; 
@@ -598,6 +621,8 @@
             letter-spacing: 1px; 
             text-transform: uppercase; 
         }
+
+        /* */
 
         /* S5 : FIN */
         #s5 { 
@@ -711,94 +736,123 @@
             transform: scale(0.9);
         }
 
-        /* === AJUSTEMENTS DIRECTS MOBILE PAYSAGE (HAUTEUR TRÈS PETITE) === */
+        /* */
+
+        /* === AJUSTEMENTS DIRECTS MOBILE PAYSAGE (HAUTEUR TRÈS PETITE - SAFARI FRIENDLY) === */
         @media (orientation: landscape) and (max-height: 480px) {
             :root { 
-                --wave-h: 70px; 
+                --wave-h: 55px; /* Hauteur de vague réduite pour libérer de la hauteur */
             }
 
-            /* S1 */
+            /* Restructuration de S1 pour éviter tout chevauchement en flexbox fluide */
             #s1 { 
-                padding-bottom: calc(var(--wave-h) + 10px); 
+                display: flex;
+                flex-direction: column;
+                justify-content: space-between;
+                align-items: center;
+                height: 100dvh;
+                padding: 10px 16px calc(var(--wave-h) + 12px) !important;
+                box-sizing: border-box;
             }
+
+            .s1-header-block {
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                gap: 4px;
+            }
+
             .logo-box { 
-                margin-bottom: 6px; 
+                margin-bottom: 2px !important; 
             }
             .logo-img { 
-                width: 130px; 
+                width: clamp(100px, 15vw, 150px) !important; 
             }
             .s1-copy { 
-                font-size: 16px; 
-                margin-bottom: 12px; 
+                font-size: clamp(14px, 2vw, 18px) !important; 
+                margin-bottom: 4px !important; 
+                padding: 0;
             }
             .s1-copy span { 
                 margin-top: 2px; 
-                font-size: 10px;
+                font-size: clamp(9px, 1.2vw, 11px) !important;
             }
             .liquid-button { 
-                width: 75px; 
-                height: 75px; 
+                width: clamp(70px, 10vh, 90px) !important; 
+                height: clamp(70px, 10vh, 90px) !important; 
+                margin: 5px 0;
             }
             .btn-label { 
-                font-size: 10px; 
+                font-size: clamp(9px, 1vw, 11px) !important; 
             }
+
+            /* Positionnement relatif de la barre de stats au-dessus des vagues */
             .stats-strip { 
-                bottom: 8px; 
-                padding: 3px; 
-                border-radius: 14px;
+                position: relative !important;
+                bottom: 0 !important;
+                left: 0 !important;
+                transform: none !important;
+                margin-top: 4px;
+                padding: 4px 8px !important; 
+                border-radius: 16px !important;
+                z-index: 12;
             }
             .ss-item { 
-                padding: 0 8px; 
+                padding: 0 6px !important; 
             }
             .ss-icon-wrap { 
-                width: 24px; 
-                height: 24px; 
+                width: 24px !important; 
+                height: 24px !important; 
             }
             .ss-icon-wrap svg {
-                width: 12px;
-                height: 12px;
+                width: 12px !important;
+                height: 12px !important;
             }
             .ss-item strong { 
-                font-size: 12px; 
+                font-size: 11px !important; 
             }
             .ss-item.ss-main strong { 
-                font-size: 14px; 
+                font-size: 13px !important; 
+            }
+            .ss-item span {
+                font-size: 8px !important;
+                margin-top: 0;
             }
             .ss-divider { 
-                height: 18px; 
+                height: 16px !important; 
             }
 
             /* S2 : Grille de saveurs */
             #s2 { 
-                padding: 10px 30px; 
+                padding: 8px 30px; 
             }
             .s2-header h2 { 
-                font-size: 18px; 
-                margin-bottom: 4px; 
+                font-size: 16px !important; 
+                margin-bottom: 4px !important; 
             }
             .flavor-grid {
-                grid-template-columns: repeat(6, 1fr); 
-                gap: 8px;
+                grid-template-columns: repeat(6, 1fr) !important; 
+                gap: 8px !important;
             }
             .flavor-circle { 
-                width: 48px; 
-                height: 48px; 
+                width: 44px !important; 
+                height: 44px !important; 
             }
             .flavor-name { 
-                font-size: 9px; 
+                font-size: 9px !important; 
             }
             .flavor-tagline { 
-                display: none; 
+                display: none !important; 
             }
 
-            /* S3 : Module paiement plus compact */
+            /* S3 : Module paiement horizontal très compact */
             #s3 { 
-                padding: 10px; 
+                padding: 8px; 
             }
             .pay-module { 
-                max-width: 460px; 
-                padding: 12px 20px; 
-                border-radius: 20px;
+                max-width: 440px !important; 
+                padding: 8px 16px !important; 
+                border-radius: 20px !important;
                 display: flex;
                 flex-direction: row;
                 align-items: center;
@@ -806,41 +860,41 @@
                 text-align: left;
             }
             .pay-flavor-img { 
-                width: 60px; 
-                height: 60px; 
-                margin: 0; 
+                width: 55px !important; 
+                height: 55px !important; 
+                margin: 0 !important; 
                 flex-shrink: 0;
             }
             .pay-details-horizontal {
                 flex-grow: 1;
             }
             .pay-methods { 
-                margin-top: 0; 
-                gap: 8px; 
-                grid-template-columns: 1fr;
-                width: 140px;
+                margin-top: 0 !important; 
+                gap: 6px !important; 
+                grid-template-columns: 1fr !important;
+                width: 130px;
                 flex-shrink: 0;
             }
             .method-item { 
-                padding: 6px 10px; 
-                border-radius: 10px; 
-                flex-direction: row;
-                gap: 8px;
-                font-size: 9px;
+                padding: 5px 8px !important; 
+                border-radius: 8px !important; 
+                flex-direction: row !important;
+                gap: 6px !important;
+                font-size: 8px !important;
             }
             .method-icon-wrap { 
-                width: 16px;
-                height: 16px; 
+                width: 14px !important;
+                height: 14px !important; 
             }
             .method-icon-wrap svg {
-                width: 14px;
-                height: 14px;
+                width: 12px !important;
+                height: 12px !important;
             }
             .back-circle { 
-                top: 12px; 
-                left: 12px; 
-                width: 32px; 
-                height: 32px; 
+                top: 8px !important; 
+                left: 8px !important; 
+                width: 28px !important; 
+                height: 28px !important; 
             }
 
             /* S4 : Remplissage côte à côte */
@@ -849,44 +903,44 @@
                 flex-direction: row;
                 align-items: center;
                 justify-content: center;
-                gap: 40px;
+                gap: 30px;
             }
             .glass-container { 
-                width: 90px; 
-                height: 140px; 
-                margin: 0; 
+                width: 80px !important; 
+                height: 130px !important; 
+                margin: 0 !important; 
             }
             .glass-silhouette { 
-                border-radius: 6px 6px 24px 24px; 
+                border-radius: 6px 6px 20px 20px !important; 
             }
             .liquid-fill { 
-                bottom: 5px; 
-                left: 5px; 
-                right: 5px; 
-                border-radius: 0 0 20px 20px; 
+                bottom: 4px !important; 
+                left: 4px !important; 
+                right: 4px !important; 
+                border-radius: 0 0 16px 16px !important; 
             }
             .progress-circle-box { 
-                width: 70px; 
-                height: 70px; 
+                width: 60px !important; 
+                height: 60px !important; 
             }
             .circle-svg { 
-                width: 70px; 
-                height: 70px; 
+                width: 60px !important; 
+                height: 60px !important; 
             }
             .circle-bg, .circle-bar { 
-                cx: 35; 
-                cy: 35; 
-                r: 30; 
-                stroke-width: 5; 
-                stroke-dasharray: 188.4; 
-                stroke-dashoffset: 188.4; 
+                cx: 30 !important; 
+                cy: 30 !important; 
+                r: 25 !important; 
+                stroke-width: 4 !important; 
+                stroke-dasharray: 157 !important; 
+                stroke-dashoffset: 157 !important; 
             }
             .timer-text { 
-                font-size: 18px; 
+                font-size: 16px !important; 
             }
             .filling-label { 
-                font-size: 11px; 
-                margin-top: 10px; 
+                font-size: 10px !important; 
+                margin-top: 8px !important; 
             }
 
             /* S5 : Fin horizontale */
@@ -895,43 +949,43 @@
                 flex-direction: row;
                 align-items: center;
                 justify-content: center;
-                gap: 30px;
-                padding: 15px;
+                gap: 20px;
+                padding: 10px;
             }
             .success-illustration-wrap { 
-                width: 90px;
-                height: 90px;
-                margin-bottom: 0; 
+                width: 80px !important;
+                height: 80px !important;
+                margin-bottom: 0 !important; 
             }
             .success-illustration-wrap svg {
-                width: 90px !important;
-                height: 90px !important;
+                width: 80px !important;
+                height: 80px !important;
             }
             .thanks-title { 
-                font-size: 20px; 
-                margin-bottom: 2px; 
+                font-size: 18px !important; 
+                margin-bottom: 2px !important; 
             }
             .thanks-sub { 
-                font-size: 11px; 
-                margin-bottom: 12px; 
+                font-size: 10px !important; 
+                margin-bottom: 8px !important; 
             }
             .impact-badge { 
-                padding: 8px 14px; 
-                margin-bottom: 12px; 
+                padding: 6px 12px !important; 
+                margin-bottom: 10px !important; 
             }
             .impact-badge .badge-icon-wrap { 
-                width: 16px;
-                height: 16px; 
+                width: 14px !important;
+                height: 14px !important; 
             }
             .impact-badge .badge-text strong { 
-                font-size: 11px; 
+                font-size: 10px !important; 
             }
             .impact-badge .badge-text small { 
-                font-size: 8px; 
+                font-size: 7px !important; 
             }
             .finish-btn { 
-                padding: 10px 24px; 
-                font-size: 10px; 
+                padding: 8px 20px !important; 
+                font-size: 9px !important; 
             }
         }
 
@@ -964,6 +1018,8 @@
         <p style="font-size: 13px; opacity: 0.8; max-width: 260px;">Veuillez tourner votre appareil à l'horizontale pour tester l'interface de notre borne.</p>
     </div>
 
+    <!-- -->
+
     <!-- S1 : ACCUEIL -->
     <div class="screen active" id="s1">
 
@@ -980,14 +1036,17 @@
             </svg>
         </div>
 
-        <div class="logo-box">
-            <img src="Logo.png" class="logo-img" alt="Refeel" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-            <div style="display:none; font-size: clamp(32px, 5vw, 64px); font-weight: 900; color: var(--mint); letter-spacing: -2px;">Refeel®</div>
-        </div>
-        
-        <div class="s1-copy">
-            Ton coup de frais. 0% sucre,<br>
-            <span>Le plaisir du sirop, la légèreté de l'eau.</span>
+        <!-- Header block pour la flexbox du paysage Safari -->
+        <div class="s1-header-block">
+            <div class="logo-box">
+                <img src="Logo.png" class="logo-img" alt="Refeel" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <div style="display:none; font-size: clamp(32px, 5vw, 64px); font-weight: 900; color: var(--mint); letter-spacing: -2px;">Refeel®</div>
+            </div>
+            
+            <div class="s1-copy">
+                Ton coup de fraîcheur intense. 0% sucre ajouté,<br>
+                <span>Le plaisir fruité à l'état pur, la légèreté de l'eau.</span>
+            </div>
         </div>
 
         <!-- Servir triggers fullscreen -->
@@ -1027,6 +1086,8 @@
         </div>
     </div>
 
+    <!-- -->
+
     <!-- S2 : SAVEURS -->
     <div class="screen" id="s2">
         <div class="back-circle" onclick="goto(1)">
@@ -1036,7 +1097,7 @@
             </svg>
         </div>
         <div class="s2-header">
-            <h2>Quelle <span style="color:var(--mint)">fraîcheur</span> ?</h2>
+            <h2>Quelle <span style="color:var(--mint)">fraîcheur saine</span> ?</h2>
         </div>
         <div class="flavor-grid" id="flavor-list"></div>
     </div>
@@ -1057,7 +1118,6 @@
                     <div class="nfc-wave"></div>
                     <div class="nfc-wave"></div>
                     <div class="nfc-icon-wrap" id="nfc-icon-display">
-                        <!-- Default phone SVG -->
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
                             <line x1="12" y1="18" x2="12.01" y2="18"/>
@@ -1112,6 +1172,8 @@
         </div>
     </div>
 
+    <!-- -->
+
     <!-- S4 : REMPLISSAGE -->
     <div class="screen" id="s4">
         <div class="filling-container">
@@ -1130,7 +1192,7 @@
                     </svg>
                     <div class="timer-text" id="counter">6</div>
                 </div>
-                <p class="filling-label">Préparation en cours</p>
+                <p class="filling-label">Préparation saine en cours</p>
             </div>
         </div>
     </div>
@@ -1154,7 +1216,7 @@
         </div>
         <div class="success-content">
             <h1 class="thanks-title">C'est prêt !</h1>
-            <p class="thanks-sub">Déguste ta boisson bien fraîche.</p>
+            <p class="thanks-sub">Déguste ta boisson fraîche et sans sucres ajoutés.</p>
 
             <div class="impact-badge">
                 <div class="badge-icon-wrap">
@@ -1166,7 +1228,7 @@
                 </div>
                 <div class="badge-text">
                     <strong>1 bouteille plastique évitée</strong>
-                    <small>Bravo — le geste compte.</small>
+                    <small>Bravo — ton geste compte.</small>
                 </div>
             </div>
 
@@ -1178,22 +1240,24 @@
         <p style="position:absolute; bottom: 15px; left:0; right:0; font-size: 11px; font-weight: 700; color: var(--mint-dark); letter-spacing: 0.5px;">#RefeelYourDay</p>
     </div>
 
+    <!-- -->
+
     <script>
-        // DONNÉES DES BOISSONS (SANS ÉMOJI)
+        // DONNÉES DES BOISSONS (SANS ÉMOJI, DESCRIPTIFS TRÈS ATTRACTIFS AVEC FOCUS SANS SUCRE AJOUTÉ)
         const DATA = [
-            { name: "Citron Gingembre", color: "#FDE047", desc: "Vif, épicé, tonique. Le coup de fouet du matin.", tags: ["Sans sucre", "Naturel"], img: "https://thumbs.dreamstime.com/b/cocktail-au-citron-vert-rafra%C3%AEchissant-avec-de-la-glace-431790760.jpg" },
-            { name: "Hibiscus", color: "#EF4444", desc: "Floral, acidulé, antioxydant. Riche en vitamine C.", tags: ["Antioxydant", "Vitamine C"], img: "https://thumbs.dreamstime.com/b/boisson-rafra%C3%AEchissante-au-th%C3%A9-glac%C3%A9-hibiscus-rouge-garnie-de-feuilles-menthe-et-fleurs-d-%C3%A9t%C3%A9-parfaite-id%C3%A9al-pour-un-une-348014080.jpg" },
-            { name: "Menthe Fraîche", color: "#3DD9BC", desc: "Fraîche, pure, revitalisante. L'hydratation ultime.", tags: ["Digestion", "Ultra frais"], img: "https://media.istockphoto.com/id/183783284/fr/photo/la-menthe-fra%C3%AEche.jpg?s=612x612&w=0&k=20&c=Snu2aMOKwJJqOfr3frdV-ego7FWaaeknh8XgsRsyH3A=" },
-            { name: "Agrumes", color: "#F97316", desc: "Orange, citron, pamplemousse. Un soleil en bouteille.", tags: ["Vitamine C", "Pep's"], img: "https://media.istockphoto.com/id/179210275/photo/oranges-in-water.jpg?s=612x612&w=0&k=20&c=R5hw3Su-xeKSi9sQ9CLob4OInnFlPW-bCzMav6T4FP4=" },
-            { name: "Fruits Rouges", color: "#991B1B", desc: "Cassis, framboise, myrtille. Riche et profond.", tags: ["Antioxydant", "Local"], img: "https://img.freepik.com/photos-premium/boisson-aux-fruits-rafraichissante-froide-baies-groseilles-rouges-dans-flute-verre-transparent-glace-fruits-au-citron-vert-table-bois-clair-fond-blanc_654281-71.jpg" },
-            { name: "Pomme Cannelle", color: "#84CC16", desc: "Doux, réconfortant, parfait après l'effort.", tags: ["Énergie douce", "Hiver"], img: "https://media.istockphoto.com/id/1473429125/fr/photo/pomme-fra%C3%AEche-avec-%C3%A9claboussure-de-jus-de-pomme.jpg?s=612x612&w=0&k=20&c=GEWj2bhxx0xUe2JA-p3Je12uo1afzWX42vldJCT9me4=" }
+            { name: "Citron Gingembre", color: "#FDE047", desc: "Vif, épicé, tonique. Le grand coup de fouet 100% sain.", tags: ["Sans sucre ajouté", "Énergie pure"], img: "https://thumbs.dreamstime.com/b/cocktail-au-citron-vert-rafra%C3%AEchissant-avec-de-la-glace-431790760.jpg" },
+            { name: "Hibiscus", color: "#EF4444", desc: "Floral, acidulé, antioxydant. Une infusion fruitée délicate.", tags: ["0% Sucre ajouté", "Fleurs bio"], img: "https://thumbs.dreamstime.com/b/boisson-rafra%C3%AEchissante-au-th%C3%A9-glac%C3%A9-hibiscus-rouge-garnie-de-feuilles-menthe-et-fleurs-d-%C3%A9t%C3%A9-parfaite-id%C3%A9al-pour-un-une-348014080.jpg" },
+            { name: "Menthe Fraîche", color: "#3DD9BC", desc: "Fraîche, pure, revitalisante. Le frisson polaire ultime.", tags: ["Sans calorie", "Ultra hydratant"], img: "https://media.istockphoto.com/id/183783284/fr/photo/la-menthe-fra%C3%AEche.jpg?s=612x612&w=0&k=20&c=Snu2aMOKwJJqOfr3frdV-ego7FWaaeknh8XgsRsyH3A=" },
+            { name: "Agrumes", color: "#F97316", desc: "Orange, citron, pamplemousse. Un plein de pep's vitaminé.", tags: ["0% Sucres ajoutés", "Vitamine C"], img: "https://media.istockphoto.com/id/179210275/photo/oranges-in-water.jpg?s=612x612&w=0&k=20&c=R5hw3Su-xeKSi9sQ9CLob4OInnFlPW-bCzMav6T4FP4=" },
+            { name: "Fruits Rouges", color: "#991B1B", desc: "Cassis, framboise, myrtille. Un nectar gourmand et léger.", tags: ["100% Naturel", "Zéro culpabilité"], img: "https://img.freepik.com/photos-premium/boisson-aux-fruits-rafraichissante-froide-baies-groseilles-rouges-dans-flute-verre-transparent-glace-fruits-au-citron-vert-table-bois-clair-fond-blanc_654281-71.jpg" },
+            { name: "Pomme Cannelle", color: "#84CC16", desc: "Doux, réconfortant, gourmandise réconfortante d'après effort.", tags: ["Zéro sucre ajouté", "Énergie douce"], img: "https://media.istockphoto.com/id/1473429125/fr/photo/pomme-fra%C3%AEche-avec-%C3%A9claboussure-de-jus-de-pomme.jpg?s=612x612&w=0&k=20&c=GEWj2bhxx0xUe2JA-p3Je12uo1afzWX42vldJCT9me4=" }
         ];
 
-        // GESTION DES NOTIFICATIONS PERSONNALISÉES TOAST
+        // GESTION DES NOTIFICATIONS TOAST
         function showNotification(message, type = 'success') {
             const toast = document.getElementById('custom-toast');
             toast.innerText = message;
-            toast.className = 'custom-toast'; // réinitialiser
+            toast.className = 'custom-toast'; 
             
             if (type === 'error') {
                 toast.classList.add('error');
@@ -1219,26 +1283,33 @@
                 document.getElementById('pay-img').alt = f.name;
                 document.getElementById('pay-flavor-wrap').style.backgroundColor = f.color;
                 document.getElementById('liquid-fill').style.backgroundColor = f.color;
-                
-                // Colorer le gobelet de fin SVG dynamiquement en fonction de la saveur
                 document.getElementById('success-liquid-path').setAttribute('fill', f.color);
-                
                 goto(3);
             };
             grid.appendChild(card);
         });
 
-        // FORCE LE PLEIN ÉCRAN MOBILE
+        // FORCE LE PLEIN ÉCRAN SAFARI & MOBILE NAVIGATEUR
         function startAppWithFullscreen() {
             const docElm = document.documentElement;
             if (docElm.requestFullscreen) {
                 docElm.requestFullscreen().catch(() => {});
             } else if (docElm.webkitRequestFullscreen) {
                 docElm.webkitRequestFullscreen().catch(() => {});
+            } else if (docElm.mozRequestFullScreen) {
+                docElm.mozRequestFullScreen().catch(() => {});
+            } else if (docElm.msRequestFullscreen) {
+                docElm.msRequestFullscreen().catch(() => {});
+            }
+
+            // Astuce supplémentaire de notification si iOS ne supporte pas l'API Fullscreen natif hors PWA
+            if (/iPhone|iPad|iPod/i.test(navigator.userAgent) && !window.navigator.standalone) {
+                showNotification("Pour une immersion totale : ajoute cette page à ton écran d'accueil iOS ! 📱");
             }
             goto(2);
         }
 
+        // NAVIGATION
         function goto(n) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('s' + n).classList.add('active');
@@ -1248,7 +1319,7 @@
             }
         }
 
-        // SIMULATION AUDIO ET VISUELLE DU PAIEMENT
+        // SIMULATION DU PAIEMENT AVEC SON DE VALIDATION "BIP"
         function playPaymentBeep() {
             try {
                 const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1257,7 +1328,7 @@
 
                 oscillator.type = 'sine';
                 oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); 
-                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.08, audioCtx.currentTime);
                 
                 oscillator.connect(gainNode);
                 gainNode.connect(audioCtx.destination);
@@ -1268,7 +1339,7 @@
                     audioCtx.close();
                 }, 150);
             } catch (e) {
-                console.log("Audio bloqué ou non géré par l'appareil.");
+                console.log("Audio non disponible sans interaction utilisateur préalable.");
             }
         }
 
@@ -1278,7 +1349,6 @@
             const desc = document.getElementById('status-desc');
             const iconWrap = document.getElementById('nfc-icon-display');
 
-            // Switch vector icons instead of emojis
             let selectedSvg = '';
             if (type === 'phone') {
                 selectedSvg = `
@@ -1306,40 +1376,37 @@
             desc.innerText = "Patientez s'il vous plaît...";
             overlay.classList.add('active');
 
-            // Phase 1 : Lecture
             setTimeout(() => {
                 title.innerText = "Autorisation en cours...";
-                desc.innerText = "Communication serveur...";
-            }, 1200);
+                desc.innerText = "Sécurisation bancaire...";
+            }, 1100);
 
-            // Phase 2 : Succès avec "BIP !"
             setTimeout(() => {
                 playPaymentBeep();
                 title.innerText = "Paiement Validé !";
-                desc.innerText = "Merci, préparez votre gobelet.";
+                desc.innerText = "Préparez votre gobelet.";
                 iconWrap.innerHTML = `
                     <svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="width:36px; height:36px;">
                         <polyline points="20 6 9 17 4 12"/>
                     </svg>`;
                 
-                showNotification("Paiement autorisé. Préparation de votre boisson !");
+                showNotification("Paiement accepté ! Préparation saine de votre boisson.");
 
-                // Redirection vers le remplissage (S4)
                 setTimeout(() => {
                     overlay.classList.remove('active');
                     startServe();
                 }, 1000);
-            }, 2500);
+            }, 2300);
         }
 
-        // ANIMATION DU REMPLISSAGE (S4)
+        // ANIMATION ET SYNCHRONISATION DU REMPLISSAGE (S4)
         function startServe() {
             goto(4);
             let pct = 0;
             let time = 6;
             
             const isLandscape = window.innerHeight <= 480;
-            const totalDash = isLandscape ? 188.4 : 251.2; 
+            const totalDash = isLandscape ? 157 : 251.2; 
             
             const liquid = document.getElementById('liquid-fill');
             const circle = document.getElementById('circle-bar');
@@ -1361,12 +1428,12 @@
 
                 if (pct >= 100) {
                     clearInterval(timer);
-                    setTimeout(() => goto(5), 800);
+                    setTimeout(() => goto(5), 700);
                 }
             }, 60);
         }
 
-        // HOVER EFFECT LIQUID BUTTON
+        // EFFET AU SURVOL DU BOUTON SERVIR
         const liquidBtn = document.querySelector('.liquid-button');
         const btnFill = document.getElementById('btn-fill');
         liquidBtn.addEventListener('mouseenter', () => btnFill.style.height = '100%');
