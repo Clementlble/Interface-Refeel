@@ -1177,7 +1177,7 @@
             <strong>Activer le plein écran</strong>
             <span>Safari → <span class="share-icon">↑</span> → <strong>Ajouter à l'écran d'accueil</strong><br>puis ouvrir depuis l'écran d'accueil</span>
         </div>
-        <button class="ios-guide-close" onclick="document.getElementById('ios-fs-guide').classList.remove('visible')">✕</button>
+        <button class="ios-guide-close" onclick="dismissIOSGuide()">✕</button>
     </div>
 
     <!-- PORTRAIT VERROUILLÉ (ASSISTANCE UTILISATEUR) -->
@@ -1506,24 +1506,30 @@
                    window.matchMedia('(display-mode: fullscreen)').matches;
         }
 
+        // Fermer et ne plus jamais réafficher
+        function dismissIOSGuide() {
+            document.getElementById('ios-fs-guide').classList.remove('visible');
+            localStorage.setItem('refeel_fs_guide_dismissed', '1');
+        }
+
+        function shouldShowIOSGuide() {
+            return isIOS() && !isStandalone() && !localStorage.getItem('refeel_fs_guide_dismissed');
+        }
+
         // FORCE LE PLEIN ÉCRAN MOBILE
         function startAppWithFullscreen() {
             const docElm = document.documentElement;
 
             if (isIOS()) {
-                if (!isStandalone()) {
-                    // iOS Safari ne supporte pas requestFullscreen → guider l'utilisateur
+                if (shouldShowIOSGuide()) {
                     const guide = document.getElementById('ios-fs-guide');
                     guide.classList.add('visible');
-                    // Auto-masquer après 8 secondes
                     setTimeout(() => guide.classList.remove('visible'), 8000);
                 }
-                // Tenter quand même (iOS 16.4+ commence à le supporter)
                 if (docElm.webkitRequestFullscreen) {
                     docElm.webkitRequestFullscreen();
                 }
             } else {
-                // Android / Desktop : fullscreen natif
                 const req = docElm.requestFullscreen || docElm.webkitRequestFullscreen || docElm.mozRequestFullScreen;
                 if (req) req.call(docElm).catch(() => {});
             }
@@ -1531,9 +1537,9 @@
             goto(2);
         }
 
-        // Afficher le guide au chargement si iOS et pas en standalone
+        // Afficher au chargement si jamais vu
         window.addEventListener('load', () => {
-            if (isIOS() && !isStandalone()) {
+            if (shouldShowIOSGuide()) {
                 setTimeout(() => {
                     document.getElementById('ios-fs-guide').classList.add('visible');
                     setTimeout(() => document.getElementById('ios-fs-guide').classList.remove('visible'), 7000);
