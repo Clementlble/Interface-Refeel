@@ -1071,81 +1071,8 @@
             }
         }
 
-        /* ══ GUIDE PLEIN ÉCRAN iOS ══ */
-        #ios-fs-guide {
-            position: fixed;
-            bottom: max(24px, env(safe-area-inset-bottom, 24px));
-            left: 50%;
-            transform: translateX(-50%) translateY(120px);
-            background: rgba(13,31,28,0.95);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            color: white;
-            border-radius: 20px;
-            padding: 16px 20px;
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            z-index: 99998;
-            box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
-            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            max-width: 90vw;
-            width: max-content;
-        }
-        #ios-fs-guide.visible {
-            transform: translateX(-50%) translateY(0);
-        }
-        .ios-guide-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--mint);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-        }
-        .ios-guide-icon svg {
-            width: 22px;
-            height: 22px;
-            color: var(--dark);
-        }
-        .ios-guide-text strong {
-            display: block;
-            font-size: 13px;
-            font-weight: 800;
-            margin-bottom: 3px;
-        }
-        .ios-guide-text span {
-            font-size: 11px;
-            opacity: 0.7;
-            line-height: 1.4;
-        }
-        .ios-guide-text .share-icon {
-            display: inline-block;
-            background: #007AFF;
-            border-radius: 5px;
-            padding: 1px 5px;
-            font-size: 11px;
-            font-weight: 800;
-            color: white;
-            vertical-align: middle;
-        }
-        .ios-guide-close {
-            width: 24px;
-            height: 24px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.15);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            flex-shrink: 0;
-            border: none;
-            color: white;
-            font-size: 14px;
-            font-weight: 700;
-        }
+        /* Sur iOS : on autorise le portrait, on masque l'aide orientation */
+        body.ios #orientation-helper { display: none !important; }
 
         /* HOVER SUR ORDINATEURS */
         @media (hover: hover) {
@@ -1164,21 +1091,6 @@
     <!-- NOTIFICATION SYSTEM -->
     <div id="custom-toast" class="custom-toast"></div>
 
-    <!-- GUIDE PLEIN ÉCRAN iOS -->
-    <div id="ios-fs-guide">
-        <div class="ios-guide-icon">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
-                <polyline points="16 6 12 2 8 6"/>
-                <line x1="12" y1="2" x2="12" y2="15"/>
-            </svg>
-        </div>
-        <div class="ios-guide-text">
-            <strong>Activer le plein écran</strong>
-            <span>Safari → <span class="share-icon">↑</span> → <strong>Ajouter à l'écran d'accueil</strong><br>puis ouvrir depuis l'écran d'accueil</span>
-        </div>
-        <button class="ios-guide-close" onclick="dismissIOSGuide()">✕</button>
-    </div>
 
     <!-- PORTRAIT VERROUILLÉ (ASSISTANCE UTILISATEUR) -->
     <div id="orientation-helper">
@@ -1214,7 +1126,7 @@
         </div>
         
         <div class="s1-copy">
-            Ton coup de frais. 0% sucre ajouté,<br>
+            Ton coup de frais. 0% sucre,<br>
             <span>Le plaisir du sirop, la légèreté de l'eau.</span>
         </div>
 
@@ -1496,56 +1408,23 @@
             grid.appendChild(card);
         });
 
-        // DÉTECTION iOS ET MODE STANDALONE
+        // DÉTECTION iOS
         function isIOS() {
             return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
         }
-        function isStandalone() {
-            return window.navigator.standalone === true ||
-                   window.matchMedia('(display-mode: standalone)').matches ||
-                   window.matchMedia('(display-mode: fullscreen)').matches;
-        }
 
-        // Fermer et ne plus jamais réafficher
-        function dismissIOSGuide() {
-            document.getElementById('ios-fs-guide').classList.remove('visible');
-            localStorage.setItem('refeel_fs_guide_dismissed', '1');
-        }
+        // Sur iOS : portrait autorisé, pas de fullscreen forcé
+        if (isIOS()) document.body.classList.add('ios');
 
-        function shouldShowIOSGuide() {
-            return isIOS() && !isStandalone() && !localStorage.getItem('refeel_fs_guide_dismissed');
-        }
-
-        // FORCE LE PLEIN ÉCRAN MOBILE
+        // FORCE LE PLEIN ÉCRAN (Android / Desktop uniquement)
         function startAppWithFullscreen() {
-            const docElm = document.documentElement;
-
-            if (isIOS()) {
-                if (shouldShowIOSGuide()) {
-                    const guide = document.getElementById('ios-fs-guide');
-                    guide.classList.add('visible');
-                    setTimeout(() => guide.classList.remove('visible'), 8000);
-                }
-                if (docElm.webkitRequestFullscreen) {
-                    docElm.webkitRequestFullscreen();
-                }
-            } else {
+            if (!isIOS()) {
+                const docElm = document.documentElement;
                 const req = docElm.requestFullscreen || docElm.webkitRequestFullscreen || docElm.mozRequestFullScreen;
                 if (req) req.call(docElm).catch(() => {});
             }
-
             goto(2);
         }
-
-        // Afficher au chargement si jamais vu
-        window.addEventListener('load', () => {
-            if (shouldShowIOSGuide()) {
-                setTimeout(() => {
-                    document.getElementById('ios-fs-guide').classList.add('visible');
-                    setTimeout(() => document.getElementById('ios-fs-guide').classList.remove('visible'), 7000);
-                }, 1500);
-            }
-        });
 
         function goto(n) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
