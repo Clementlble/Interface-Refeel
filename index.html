@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Refeel - Fraîcheur Fruitée</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -12,38 +12,126 @@
             --mint-dark: #22B89E;
             --dark: #0D1F1C;
             --bg-light: #F0F9F7;
-            --wave-h: 220px; /* hauteur vague — surchargée par media queries */
+            --wave-h: 220px; 
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; user-select: none; }
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0; 
+            -webkit-tap-highlight-color: transparent; 
+            user-select: none; 
+        }
 
         body, html {
-            width: 100%; height: 100%;
+            width: 100%; 
+            height: 100%;
             overflow: hidden;
             background: var(--bg-light);
             font-family: "Plus Jakarta Sans", sans-serif;
             color: var(--dark);
         }
 
-        /* NAVIGATION */
-        .screen {
-            position: absolute; inset: 0;
-            opacity: 0; pointer-events: none;
-            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-            display: flex; flex-direction: column;
-            z-index: 5;
+        /* SYSTÈME DE TOAST NOTIFICATION */
+        .custom-toast {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(-100px);
+            background: var(--dark);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 100px;
+            font-size: 13px;
+            font-weight: 700;
+            z-index: 100000;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            opacity: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .screen.active { opacity: 1; pointer-events: all; }
+        .custom-toast.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        .custom-toast.error {
+            background: #EF4444;
+        }
+        .custom-toast.success {
+            background: var(--mint-dark);
+        }
 
-        /* VAGUES */
+        /* ASSISTANCE PORTRAIT (IPHONE ROTATE) */
+        #orientation-helper {
+            position: fixed;
+            inset: 0;
+            background: var(--dark);
+            color: white;
+            z-index: 99999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 24px;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
+            opacity: 0;
+        }
+        @media (orientation: portrait) {
+            #orientation-helper {
+                opacity: 1;
+                pointer-events: all;
+            }
+        }
+        .helper-icon-svg {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 16px;
+            color: var(--mint);
+            animation: rotatePhone 2s ease-in-out infinite;
+        }
+        @keyframes rotatePhone {
+            0%, 100% { transform: rotate(0deg); }
+            50% { transform: rotate(-90deg); }
+        }
+
+        /* NAVIGATION DES ÉCRANS */
+        .screen {
+            position: absolute; 
+            inset: 0;
+            opacity: 0; 
+            pointer-events: none;
+            transition: opacity 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex; 
+            flex-direction: column;
+            z-index: 5;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+        }
+        .screen.active { 
+            opacity: 1; 
+            pointer-events: all; 
+        }
+
+        /* WAVE GRAPHICS */
         .ocean-footer {
             height: var(--wave-h);
-            width: 100%; position: absolute; bottom: 0; left: 0;
-            z-index: 2; overflow: hidden;
+            width: 100%; 
+            position: absolute; 
+            bottom: 0; 
+            left: 0;
+            z-index: 2; 
+            overflow: hidden;
+            transition: height 0.3s ease;
         }
         .wave-svg {
-            position: absolute; bottom: 0; left: 0;
-            width: 200%; height: 100%;
+            position: absolute; 
+            bottom: 0; 
+            left: 0;
+            width: 200%; 
+            height: 100%;
             animation: wave-slide 10s linear infinite;
         }
         @keyframes wave-slide {
@@ -51,220 +139,835 @@
             100% { transform: translateX(-50%); }
         }
 
-        /* ── S1 : ACCUEIL ── */
-        /* padding-bottom = vague + stats-strip + petit gap */
+        /* S1 : ACCUEIL */
         #s1 {
-            align-items: center; justify-content: center;
+            align-items: center; 
+            justify-content: center;
             text-align: center;
-            padding-bottom: calc(var(--wave-h) + 90px);
+            padding-bottom: calc(var(--wave-h) + 60px);
         }
 
-        .logo-box { z-index: 10; margin-bottom: clamp(12px, 2.2vh, 36px); }
-        .logo-img { width: clamp(200px, 26vw, 460px); max-width: 80vw; height: auto; display: block; margin: 0 auto; }
+        .logo-box { 
+            z-index: 10; 
+            margin-bottom: clamp(10px, 2vh, 30px); 
+        }
+        .logo-img { 
+            width: clamp(160px, 22vw, 380px); 
+            max-width: 80vw; 
+            height: auto; 
+            display: block; 
+            margin: 0 auto; 
+        }
 
         .s1-copy {
             z-index: 10;
-            font-size: clamp(20px, 2.6vw, 44px);
-            font-weight: 800; margin-bottom: clamp(20px, 3.8vh, 54px);
-            line-height: 1.2; color: var(--dark); padding: 0 16px;
+            font-size: clamp(16px, 2.2vw, 36px);
+            font-weight: 800; 
+            margin-bottom: clamp(15px, 3vh, 45px);
+            line-height: 1.2; 
+            color: var(--dark); 
+            padding: 0 16px;
         }
         .s1-copy span {
             display: block;
-            font-size: clamp(13px, 1.3vw, 22px);
-            font-weight: 500; color: var(--mint-dark);
-            margin-top: clamp(8px, 1vh, 14px); opacity: 0.9;
+            font-size: clamp(11px, 1.1vw, 18px);
+            font-weight: 500; 
+            color: var(--mint-dark);
+            margin-top: clamp(6px, 1vh, 12px); 
+            opacity: 0.9;
         }
 
         /* BOUTON SERVIR */
         .liquid-button {
             position: relative;
-            width: clamp(130px, 13vw, 220px);
-            height: clamp(130px, 13vw, 220px);
-            background: #E0F2F0; border-radius: 50%; border: none; cursor: pointer;
-            overflow: hidden; z-index: 10;
-            display: flex; align-items: center; justify-content: center;
+            width: clamp(100px, 11vw, 180px);
+            height: clamp(100px, 11vw, 180px);
+            background: #E0F2F0; 
+            border-radius: 50%; 
+            border: none; 
+            cursor: pointer;
+            overflow: hidden; 
+            z-index: 10;
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
             transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-            box-shadow: 0 15px 35px rgba(61, 217, 188, 0.25);
+            box-shadow: 0 12px 30px rgba(61, 217, 188, 0.25);
         }
-        .liquid-button:active { transform: scale(0.9); }
+        .liquid-button:active { 
+            transform: scale(0.9); 
+        }
 
         .button-fill {
-            position: absolute; bottom: 0; left: 0;
-            width: 100%; height: 35%;
-            background: var(--mint); transition: height 0.4s ease; z-index: 1;
+            position: absolute; 
+            bottom: 0; 
+            left: 0;
+            width: 100%; 
+            height: 35%;
+            background: var(--mint); 
+            transition: height 0.4s ease; 
+            z-index: 1;
         }
         .button-fill::before {
             content: "";
-            position: absolute; top: -15px; left: 0;
-            width: 200%; height: 20px;
+            position: absolute; 
+            top: -15px; 
+            left: 0;
+            width: 200%; 
+            height: 20px;
             background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C150,100 350,0 500,50 C650,100 850,0 1000,50 L1000,100 L0,100 Z' fill='%233DD9BC'/%3E%3C/svg%3E") repeat-x;
             background-size: 50% 100%;
             animation: inner-wave 2s linear infinite;
         }
-        @keyframes inner-wave {
-            from { transform: translateX(0); }
-            to   { transform: translateX(-50%); }
+        .btn-label { 
+            position: relative; 
+            z-index: 2; 
+            font-weight: 800; 
+            text-transform: uppercase; 
+            letter-spacing: 1.5px; 
+            font-size: clamp(10px, 0.9vw, 14px); 
+            color: var(--dark); 
         }
-        .btn-label { position: relative; z-index: 2; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; font-size: clamp(12px, 1vw, 16px); color: var(--dark); }
 
-        /* BARRE DE STATS (S1) — centrée, flotte juste au-dessus des vagues */
+        /* BARRE DE STATS (S1) */
         .stats-strip {
             position: absolute;
-            bottom: calc(var(--wave-h) + 16px);
-            left: 50%; transform: translateX(-50%);
+            bottom: calc(var(--wave-h) + 12px);
+            left: 50%; 
+            transform: translateX(-50%);
             z-index: 12;
-            display: flex; align-items: center;
-            background: rgba(255,255,255,0.78);
-            -webkit-backdrop-filter: blur(22px) saturate(1.5);
-            backdrop-filter: blur(22px) saturate(1.5);
+            display: flex; 
+            align-items: center;
+            background: rgba(255,255,255,0.82);
+            backdrop-filter: blur(20px) saturate(1.5);
+            -webkit-backdrop-filter: blur(20px) saturate(1.5);
             border: 1px solid rgba(255,255,255,0.9);
-            border-radius: 28px; padding: 9px;
-            box-shadow: 0 12px 36px rgba(13,31,28,0.10), 0 2px 8px rgba(61,217,188,0.07);
+            border-radius: 24px; 
+            padding: 6px;
+            box-shadow: 0 10px 30px rgba(13,31,28,0.08);
             white-space: nowrap;
         }
-        .ss-item { display: flex; align-items: center; gap: 10px; padding: 4px clamp(12px, 1.6vw, 22px); }
-        .ss-item.ss-main { padding-left: 6px; }
-        .ss-icon-wrap {
-            width: clamp(38px, 3.6vw, 50px); height: clamp(38px, 3.6vw, 50px);
-            border-radius: 50%; background: var(--mint);
-            display: flex; align-items: center; justify-content: center;
-            font-size: clamp(18px, 1.8vw, 24px);
-            box-shadow: 0 6px 16px rgba(61,217,188,0.38); flex-shrink: 0;
+        .ss-item { 
+            display: flex; 
+            align-items: center; 
+            gap: 8px; 
+            padding: 2px clamp(10px, 1.4vw, 18px); 
         }
-        .ss-data { display: flex; flex-direction: column; align-items: flex-start; }
-        .ss-item strong { font-size: clamp(16px, 1.8vw, 26px); font-weight: 800; line-height: 1; color: var(--dark); letter-spacing: -0.5px; display: block; }
-        .ss-item.ss-main strong { font-size: clamp(22px, 2.4vw, 34px); letter-spacing: -1.2px; }
-        .ss-item span { font-size: clamp(9px, 0.7vw, 11px); font-weight: 600; color: var(--mint-dark); margin-top: 3px; display: block; }
-        .ss-divider { width: 1px; height: clamp(34px, 3.5vw, 48px); background: rgba(61, 217, 188, 0.22); flex-shrink: 0; }
+        .ss-item.ss-main { 
+            padding-left: 4px; 
+        }
+        .ss-icon-wrap {
+            width: clamp(32px, 3vw, 42px); 
+            height: clamp(32px, 3vw, 42px);
+            border-radius: 50%; 
+            background: var(--mint);
+            display: flex; 
+            align-items: center; 
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(61,217,188,0.3); 
+            flex-shrink: 0;
+        }
+        .ss-icon-wrap svg {
+            width: clamp(16px, 1.6vw, 22px);
+            height: clamp(16px, 1.6vw, 22px);
+            color: var(--dark);
+        }
+        .ss-data { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: flex-start; 
+        }
+        .ss-item strong { 
+            font-size: clamp(13px, 1.4vw, 22px); 
+            font-weight: 800; 
+            line-height: 1; 
+            color: var(--dark); 
+            letter-spacing: -0.3px; 
+        }
+        .ss-item.ss-main strong { 
+            font-size: clamp(18px, 1.8vw, 28px); 
+            letter-spacing: -0.8px; 
+        }
+        .ss-item span { 
+            font-size: clamp(8px, 0.6vw, 10px); 
+            font-weight: 600; 
+            color: var(--mint-dark); 
+            margin-top: 2px; 
+        }
+        .ss-divider { 
+            width: 1px; 
+            height: clamp(28px, 3vw, 40px); 
+            background: rgba(61, 217, 188, 0.2); 
+            flex-shrink: 0; 
+        }
 
-        /* ── S2 : SAVEURS ── */
-        #s2 { padding: clamp(20px, 2.8vh, 36px) clamp(28px, 4vw, 70px) clamp(20px, 2.8vh, 46px); }
-        .s2-header h2 { font-size: clamp(26px, 3.2vw, 46px); font-weight: 800; margin-bottom: 8px; }
+        /* S2 : SAVEURS */
+        #s2 { 
+            padding: clamp(15px, 2.5vh, 28px) clamp(24px, 4vw, 60px); 
+        }
+        .s2-header h2 { 
+            font-size: clamp(22px, 2.8vw, 38px); 
+            font-weight: 800; 
+            margin-bottom: 6px; 
+            text-align: center;
+        }
 
-        /* Grille fluide : jamais plus large que l'écran */
         .flavor-grid {
             display: grid;
-            grid-template-columns: repeat(3, clamp(130px, 21vw, 320px));
-            justify-content: center; align-content: center;
-            gap: clamp(14px, 2.2vh, 38px) clamp(18px, 3.5vw, 70px);
+            grid-template-columns: repeat(3, clamp(110px, 18vw, 260px));
+            justify-content: center; 
+            align-content: center;
+            gap: clamp(10px, 1.8vh, 24px) clamp(14px, 3vw, 50px);
             flex: 1;
         }
 
-        /* Animation flottaison */
         @keyframes float-card {
             0%, 100% { transform: translateY(0); }
-            50%       { transform: translateY(-13px); }
+            50%       { transform: translateY(-8px); }
         }
-        .flavor-card { display: flex; flex-direction: column; align-items: center; gap: 12px; cursor: pointer; animation: float-card 3.4s ease-in-out infinite; }
+        .flavor-card { 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            gap: 8px; 
+            cursor: pointer; 
+            animation: float-card 3.4s ease-in-out infinite; 
+        }
         .flavor-card:nth-child(1) { animation-delay: 0s; }
         .flavor-card:nth-child(2) { animation-delay: 0.45s; }
         .flavor-card:nth-child(3) { animation-delay: 0.9s; }
         .flavor-card:nth-child(4) { animation-delay: 0.22s; }
         .flavor-card:nth-child(5) { animation-delay: 0.67s; }
         .flavor-card:nth-child(6) { animation-delay: 1.12s; }
-        .flavor-card:active { animation-play-state: paused; }
 
-        .flavor-circle { width: 100%; aspect-ratio: 1/1; border-radius: 50%; overflow: hidden; position: relative; border: 4px solid #fff; box-shadow: 0 14px 30px rgba(13,31,28,0.13); transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); }
-        .flavor-card:active .flavor-circle { transform: scale(0.92); }
-        .flavor-circle img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .flavor-text { text-align: center; }
-        .flavor-name { font-size: clamp(13px, 1.3vw, 19px); font-weight: 800; color: var(--dark); line-height: 1.1; }
-        .flavor-tagline { font-size: clamp(9px, 0.7vw, 11px); font-weight: 600; color: var(--mint-dark); margin-top: 4px; text-transform: uppercase; letter-spacing: 0.4px; }
+        .flavor-circle { 
+            width: 100%; 
+            aspect-ratio: 1/1; 
+            border-radius: 50%; 
+            overflow: hidden; 
+            position: relative; 
+            border: 3px solid #fff; 
+            box-shadow: 0 10px 24px rgba(13,31,28,0.1); 
+            transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1); 
+        }
+        .flavor-card:active .flavor-circle { 
+            transform: scale(0.92); 
+        }
+        .flavor-circle img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
+        .flavor-text { 
+            text-align: center; 
+        }
+        .flavor-name { 
+            font-size: clamp(11px, 1.1vw, 16px); 
+            font-weight: 800; 
+            color: var(--dark); 
+            line-height: 1.1; 
+        }
+        .flavor-tagline { 
+            font-size: clamp(8px, 0.6vw, 10px); 
+            font-weight: 600; 
+            color: var(--mint-dark); 
+            margin-top: 2px; 
+            text-transform: uppercase; 
+            letter-spacing: 0.4px; 
+        }
 
-        /* ── S3 : PAIEMENT ── */
-        #s3 { align-items: center; justify-content: center; padding: 40px; }
-        .pay-module { background: white; padding: clamp(28px, 3.5vw, 50px); border-radius: 40px; text-align: center; width: 100%; max-width: clamp(320px, 38vw, 520px); }
+        /* S3 : PAIEMENT */
+        #s3 { 
+            align-items: center; 
+            justify-content: center; 
+            padding: 20px; 
+        }
+        
+        .pay-module { 
+            background: white; 
+            padding: clamp(20px, 3vh, 36px); 
+            border-radius: 32px; 
+            text-align: center; 
+            width: 100%; 
+            max-width: clamp(290px, 34vw, 440px); 
+            box-shadow: 0 15px 40px rgba(13,31,28,0.08);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
         .pay-flavor-img {
-            width: clamp(110px, 12vw, 150px);
-            height: clamp(110px, 12vw, 150px);
+            width: clamp(80px, 10vw, 110px);
+            height: clamp(80px, 10vw, 110px);
             border-radius: 50%;
             overflow: hidden;
-            margin: 0 auto clamp(16px, 2vh, 24px);
-            border: 4px solid var(--bg-light);
-            box-shadow: 0 14px 34px rgba(13,31,28,0.16);
+            margin: 0 auto clamp(10px, 1.5vh, 18px);
+            border: 3px solid var(--bg-light);
+            box-shadow: 0 10px 24px rgba(13,31,28,0.12);
             background: #e0f2f0;
         }
-        .pay-flavor-img img { width: 100%; height: 100%; object-fit: cover; display: block; }
-        .pay-methods { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 28px; }
-        .method-item { background: #f0f4f3; padding: 20px 10px; border-radius: 20px; font-weight: 700; font-size: clamp(11px, 1vw, 14px); cursor: pointer; }
-
-        /* ── S4 : REMPLISSAGE ── */
-        #s4 { align-items: center; justify-content: center; background: #fff; }
-        .filling-container { text-align: center; z-index: 10; }
-        .glass-container { position: relative; width: 180px; height: 280px; margin: 0 auto 40px; }
-        .glass-silhouette { position: absolute; inset: 0; border: 3px solid rgba(0,0,0,0.05); border-radius: 10px 10px 60px 60px; z-index: 2; }
-        .liquid-fill { position: absolute; bottom: 10px; left: 10px; right: 10px; height: 0%; background: var(--mint); border-radius: 0 0 50px 50px; transition: height 0.1s linear; overflow: hidden; }
-        .liquid-wave { position: absolute; top: -20px; left: -50%; width: 200%; height: 40px; background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C150,100 350,0 500,50 C650,100 850,0 1000,50 L1000,100 L0,100 Z' fill='white' opacity='0.3'/%3E%3C/svg%3E") repeat-x; background-size: 50% 100%; animation: inner-wave 2s linear infinite; }
-        .progress-circle-box { position: relative; width: 120px; height: 120px; margin: 0 auto; }
-        .circle-svg { transform: rotate(-90deg); }
-        .circle-bg { fill: none; stroke: #f0f0f0; stroke-width: 8; }
-        .circle-bar { fill: none; stroke: var(--mint); stroke-width: 8; stroke-linecap: round; stroke-dasharray: 314; stroke-dashoffset: 314; transition: stroke-dashoffset 0.1s linear; }
-        .timer-text { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 32px; font-weight: 800; color: var(--dark); }
-        .filling-label { margin-top: 20px; font-size: 18px; font-weight: 700; color: var(--mint-dark); letter-spacing: 1px; text-transform: uppercase; }
-
-        /* ── S5 : FIN ── */
-        #s5 { align-items: center; justify-content: center; background: var(--bg-light); text-align: center; }
-        .success-icon { font-size: 80px; margin-bottom: 20px; animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        @keyframes bounceIn { 0% { transform: scale(0); } 60% { transform: scale(1.2); } 100% { transform: scale(1); } }
-        .thanks-title { font-size: clamp(30px, 3.8vw, 56px); font-weight: 900; color: var(--dark); margin-bottom: 10px; }
-        .thanks-sub { font-size: clamp(14px, 1.4vw, 20px); color: var(--mint-dark); font-weight: 600; margin-bottom: 30px; opacity: 0.8; }
-        .impact-badge { display: inline-flex; align-items: center; gap: 14px; background: var(--mint); color: var(--dark); padding: 16px 28px; border-radius: 100px; margin-bottom: 40px; box-shadow: 0 14px 34px rgba(61,217,188,0.38); animation: badgePop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) 0.35s both; }
-        .impact-badge .badge-icon { font-size: 30px; line-height: 1; }
-        .impact-badge .badge-text { text-align: left; }
-        .impact-badge .badge-text strong { display: block; font-size: 16px; font-weight: 800; }
-        .impact-badge .badge-text small { font-size: 12px; font-weight: 600; opacity: 0.65; }
-        @keyframes badgePop { 0% { transform: scale(0.4); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .finish-btn { background: var(--dark); color: white; padding: clamp(16px, 2vh, 22px) clamp(40px, 5vw, 60px); border-radius: 100px; font-weight: 800; font-size: clamp(14px, 1.2vw, 16px); border: none; cursor: pointer; box-shadow: 0 10px 30px rgba(0,0,0,0.1); transition: transform 0.3s; }
-        .finish-btn:active { transform: scale(0.95); }
-
-        /* BOUTON RETOUR */
-        .back-circle { position: absolute; top: 26px; left: 26px; width: clamp(44px, 4vw, 56px); height: clamp(44px, 4vw, 56px); background: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 100; font-weight: 800; box-shadow: 0 5px 15px rgba(0,0,0,0.05); cursor: pointer; }
-
-        /* ══ BREAKPOINTS LARGEUR : ajustement de --wave-h et layout ══ */
-
-        /* Tablette (768–1199px) */
-        @media (min-width: 768px) and (max-width: 1199px) {
-            :root { --wave-h: 200px; }
+        .pay-flavor-img img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+            display: block; 
+        }
+        
+        .pay-methods { 
+            display: grid; 
+            grid-template-columns: repeat(3, 1fr); 
+            gap: 10px; 
+            margin-top: 20px; 
+        }
+        
+        .method-item { 
+            background: #f0f4f3; 
+            padding: 14px 6px; 
+            border-radius: 16px; 
+            font-weight: 800; 
+            font-size: clamp(9px, 0.8vw, 11px); 
+            cursor: pointer; 
+            transition: all 0.2s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 8px;
+            color: var(--dark);
+            border: 2px solid transparent;
+        }
+        .method-item:active {
+            transform: scale(0.95);
+        }
+        .method-icon-wrap {
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--dark);
+        }
+        .method-icon-wrap svg {
+            width: 20px;
+            height: 20px;
         }
 
-        /* Desktop (1200px+) */
-        @media (min-width: 1200px) {
-            :root { --wave-h: 240px; }
+        /* Terminal de paiement */
+        .pay-terminal-overlay {
+            position: absolute;
+            inset: 0;
+            background: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 24px;
+            transform: translateY(100%);
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 20;
+        }
+        .pay-terminal-overlay.active {
+            transform: translateY(0);
+        }
+        
+        .nfc-animation {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 20px;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .nfc-icon-wrap {
+            width: 36px;
+            height: 36px;
+            z-index: 2;
+            color: var(--dark);
+        }
+        .nfc-wave {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 2px solid var(--mint);
+            border-radius: 50%;
+            animation: pulseWave 1.5s infinite;
+            opacity: 0;
+        }
+        .nfc-wave:nth-child(2) {
+            animation-delay: 0.5s;
+        }
+        @keyframes pulseWave {
+            0% { transform: scale(0.5); opacity: 1; }
+            100% { transform: scale(1.3); opacity: 0; }
         }
 
-        /* ══ BREAKPOINT HAUTEUR : laptops / tablettes paysage courts ══ */
-        /* Ici --wave-h est réduit pour libérer de la place */
-        @media (max-height: 820px) and (min-width: 700px) {
-            :root { --wave-h: 150px; }
-            #s1 { padding-bottom: calc(var(--wave-h) + 80px); }
-            .logo-box { margin-bottom: 10px; }
-            #s2 { padding: 12px clamp(28px, 4vw, 60px) 16px; }
-            .s2-header h2 { margin-bottom: 4px; }
+        .pay-status-text {
+            font-weight: 800;
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+        .pay-sub-status {
+            font-size: 12px;
+            color: var(--mint-dark);
+            font-weight: 600;
         }
 
-        /* Très court (ex: 600px) : masquer la stats-strip pour éviter tout chevauchement */
-        @media (max-height: 640px) {
-            .stats-strip { display: none; }
+        /* S4 : REMPLISSAGE */
+        #s4 { 
+            align-items: center; 
+            justify-content: center; 
+            background: #fff; 
+        }
+        .filling-container { 
+            text-align: center; 
+            z-index: 10; 
+        }
+        .glass-container { 
+            position: relative; 
+            width: 150px; 
+            height: 230px; 
+            margin: 0 auto 30px; 
+        }
+        .glass-silhouette { 
+            position: absolute; 
+            inset: 0; 
+            border: 3px solid rgba(0,0,0,0.05); 
+            border-radius: 8px 8px 45px 45px; 
+            z-index: 2; 
+        }
+        .liquid-fill { 
+            position: absolute; 
+            bottom: 8px; 
+            left: 8px; 
+            right: 8px; 
+            height: 0%; 
+            background: var(--mint); 
+            border-radius: 0 0 38px 38px; 
+            transition: height 0.1s linear; 
+            overflow: hidden; 
+        }
+        .liquid-wave { 
+            position: absolute; 
+            top: -15px; 
+            left: -50%; 
+            width: 200%; 
+            height: 30px; 
+            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 100' preserveAspectRatio='none'%3E%3Cpath d='M0,50 C150,100 350,0 500,50 C650,100 850,0 1000,50 L1000,100 L0,100 Z' fill='white' opacity='0.3'/%3E%3C/svg%3E") repeat-x; 
+            background-size: 50% 100%; 
+            animation: inner-wave 2s linear infinite; 
+        }
+        
+        .progress-circle-box { 
+            position: relative; 
+            width: 90px; 
+            height: 90px; 
+            margin: 0 auto; 
+        }
+        .circle-svg { 
+            transform: rotate(-90deg); 
+        }
+        .circle-bg { 
+            fill: none; 
+            stroke: #f0f0f0; 
+            stroke-width: 6; 
+        }
+        .circle-bar { 
+            fill: none; 
+            stroke: var(--mint); 
+            stroke-width: 6; 
+            stroke-linecap: round; 
+            stroke-dasharray: 251.2; 
+            stroke-dashoffset: 251.2; 
+            transition: stroke-dashoffset 0.1s linear; 
+        }
+        .timer-text { 
+            position: absolute; 
+            inset: 0; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            font-size: 24px; 
+            font-weight: 800; 
+            color: var(--dark); 
+        }
+        .filling-label { 
+            margin-top: 15px; 
+            font-size: 14px; 
+            font-weight: 700; 
+            color: var(--mint-dark); 
+            letter-spacing: 1px; 
+            text-transform: uppercase; 
         }
 
-        /* ══ HOVER SOURIS ══ */
+        /* S5 : FIN */
+        #s5 { 
+            align-items: center; 
+            justify-content: center; 
+            background: var(--bg-light); 
+            text-align: center; 
+        }
+        .success-illustration-wrap {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: bounceIn 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        @keyframes bounceIn { 
+            0% { transform: scale(0); } 
+            60% { transform: scale(1.2); } 
+            100% { transform: scale(1); } 
+        }
+        .thanks-title { 
+            font-size: clamp(24px, 3vw, 42px); 
+            font-weight: 900; 
+            color: var(--dark); 
+            margin-bottom: 6px; 
+        }
+        .thanks-sub { 
+            font-size: clamp(12px, 1.2vw, 16px); 
+            color: var(--mint-dark); 
+            font-weight: 600; 
+            margin-bottom: 20px; 
+            opacity: 0.8; 
+        }
+        .impact-badge { 
+            display: inline-flex; 
+            align-items: center; 
+            gap: 10px; 
+            background: var(--mint); 
+            color: var(--dark); 
+            padding: 12px 20px; 
+            border-radius: 100px; 
+            margin-bottom: 24px; 
+            box-shadow: 0 10px 24px rgba(61,217,188,0.3); 
+            animation: badgePop 0.6s cubic-bezier(0.175,0.885,0.32,1.275) 0.35s both; 
+        }
+        .impact-badge .badge-icon-wrap { 
+            width: 24px;
+            height: 24px;
+            display: flex;
+            align-items: center;
+            color: var(--dark);
+        }
+        .impact-badge .badge-text { 
+            text-align: left; 
+        }
+        .impact-badge .badge-text strong { 
+            display: block; 
+            font-size: 13px; 
+            font-weight: 800; 
+        }
+        .impact-badge .badge-text small { 
+            font-size: 10px; 
+            font-weight: 600; 
+            opacity: 0.75; 
+        }
+        @keyframes badgePop { 
+            0% { transform: scale(0.4); opacity: 0; } 
+            100% { transform: scale(1); opacity: 1; } 
+        }
+        .finish-btn { 
+            background: var(--dark); 
+            color: white; 
+            padding: clamp(14px, 1.8vh, 18px) clamp(30px, 4vw, 50px); 
+            border-radius: 100px; 
+            font-weight: 800; 
+            font-size: clamp(11px, 1vw, 13px); 
+            border: none; 
+            cursor: pointer; 
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1); 
+            transition: transform 0.3s; 
+        }
+        .finish-btn:active { 
+            transform: scale(0.95); 
+        }
+
+        /* BOUTON RETOUR UNIVERSEL */
+        .back-circle { 
+            position: absolute; 
+            top: 20px; 
+            left: 20px; 
+            width: clamp(36px, 3.5vw, 48px); 
+            height: clamp(36px, 3.5vw, 48px); 
+            background: white; 
+            border-radius: 50%; 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 100; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.06); 
+            cursor: pointer; 
+            transition: transform 0.2s;
+            color: var(--dark);
+        }
+        .back-circle svg {
+            width: 18px;
+            height: 18px;
+        }
+        .back-circle:active {
+            transform: scale(0.9);
+        }
+
+        /* === AJUSTEMENTS DIRECTS MOBILE PAYSAGE (HAUTEUR TRÈS PETITE) === */
+        @media (orientation: landscape) and (max-height: 480px) {
+            :root { 
+                --wave-h: 70px; 
+            }
+
+            /* S1 */
+            #s1 { 
+                padding-bottom: calc(var(--wave-h) + 10px); 
+            }
+            .logo-box { 
+                margin-bottom: 6px; 
+            }
+            .logo-img { 
+                width: 130px; 
+            }
+            .s1-copy { 
+                font-size: 16px; 
+                margin-bottom: 12px; 
+            }
+            .s1-copy span { 
+                margin-top: 2px; 
+                font-size: 10px;
+            }
+            .liquid-button { 
+                width: 75px; 
+                height: 75px; 
+            }
+            .btn-label { 
+                font-size: 10px; 
+            }
+            .stats-strip { 
+                bottom: 8px; 
+                padding: 3px; 
+                border-radius: 14px;
+            }
+            .ss-item { 
+                padding: 0 8px; 
+            }
+            .ss-icon-wrap { 
+                width: 24px; 
+                height: 24px; 
+            }
+            .ss-icon-wrap svg {
+                width: 12px;
+                height: 12px;
+            }
+            .ss-item strong { 
+                font-size: 12px; 
+            }
+            .ss-item.ss-main strong { 
+                font-size: 14px; 
+            }
+            .ss-divider { 
+                height: 18px; 
+            }
+
+            /* S2 : Grille de saveurs */
+            #s2 { 
+                padding: 10px 30px; 
+            }
+            .s2-header h2 { 
+                font-size: 18px; 
+                margin-bottom: 4px; 
+            }
+            .flavor-grid {
+                grid-template-columns: repeat(6, 1fr); 
+                gap: 8px;
+            }
+            .flavor-circle { 
+                width: 48px; 
+                height: 48px; 
+            }
+            .flavor-name { 
+                font-size: 9px; 
+            }
+            .flavor-tagline { 
+                display: none; 
+            }
+
+            /* S3 : Module paiement plus compact */
+            #s3 { 
+                padding: 10px; 
+            }
+            .pay-module { 
+                max-width: 460px; 
+                padding: 12px 20px; 
+                border-radius: 20px;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                gap: 16px;
+                text-align: left;
+            }
+            .pay-flavor-img { 
+                width: 60px; 
+                height: 60px; 
+                margin: 0; 
+                flex-shrink: 0;
+            }
+            .pay-details-horizontal {
+                flex-grow: 1;
+            }
+            .pay-methods { 
+                margin-top: 0; 
+                gap: 8px; 
+                grid-template-columns: 1fr;
+                width: 140px;
+                flex-shrink: 0;
+            }
+            .method-item { 
+                padding: 6px 10px; 
+                border-radius: 10px; 
+                flex-direction: row;
+                gap: 8px;
+                font-size: 9px;
+            }
+            .method-icon-wrap { 
+                width: 16px;
+                height: 16px; 
+            }
+            .method-icon-wrap svg {
+                width: 14px;
+                height: 14px;
+            }
+            .back-circle { 
+                top: 12px; 
+                left: 12px; 
+                width: 32px; 
+                height: 32px; 
+            }
+
+            /* S4 : Remplissage côte à côte */
+            .filling-container {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 40px;
+            }
+            .glass-container { 
+                width: 90px; 
+                height: 140px; 
+                margin: 0; 
+            }
+            .glass-silhouette { 
+                border-radius: 6px 6px 24px 24px; 
+            }
+            .liquid-fill { 
+                bottom: 5px; 
+                left: 5px; 
+                right: 5px; 
+                border-radius: 0 0 20px 20px; 
+            }
+            .progress-circle-box { 
+                width: 70px; 
+                height: 70px; 
+            }
+            .circle-svg { 
+                width: 70px; 
+                height: 70px; 
+            }
+            .circle-bg, .circle-bar { 
+                cx: 35; 
+                cy: 35; 
+                r: 30; 
+                stroke-width: 5; 
+                stroke-dasharray: 188.4; 
+                stroke-dashoffset: 188.4; 
+            }
+            .timer-text { 
+                font-size: 18px; 
+            }
+            .filling-label { 
+                font-size: 11px; 
+                margin-top: 10px; 
+            }
+
+            /* S5 : Fin horizontale */
+            #s5 {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: center;
+                gap: 30px;
+                padding: 15px;
+            }
+            .success-illustration-wrap { 
+                width: 90px;
+                height: 90px;
+                margin-bottom: 0; 
+            }
+            .success-illustration-wrap svg {
+                width: 90px !important;
+                height: 90px !important;
+            }
+            .thanks-title { 
+                font-size: 20px; 
+                margin-bottom: 2px; 
+            }
+            .thanks-sub { 
+                font-size: 11px; 
+                margin-bottom: 12px; 
+            }
+            .impact-badge { 
+                padding: 8px 14px; 
+                margin-bottom: 12px; 
+            }
+            .impact-badge .badge-icon-wrap { 
+                width: 16px;
+                height: 16px; 
+            }
+            .impact-badge .badge-text strong { 
+                font-size: 11px; 
+            }
+            .impact-badge .badge-text small { 
+                font-size: 8px; 
+            }
+            .finish-btn { 
+                padding: 10px 24px; 
+                font-size: 10px; 
+            }
+        }
+
+        /* HOVER SUR ORDINATEURS */
         @media (hover: hover) {
             .flavor-card:hover { animation-play-state: paused; }
             .flavor-card:hover .flavor-circle { transform: scale(1.06); }
-            .method-item:hover { background: #d8edea; }
+            .method-item:hover { background: #d8edea; border-color: var(--mint); }
             .finish-btn:hover { transform: scale(1.03); }
             .back-circle:hover { background: var(--bg-light); }
-            .liquid-button:hover { box-shadow: 0 20px 48px rgba(61, 217, 188, 0.4); }
+            .liquid-button:hover { box-shadow: 0 15px 35px rgba(61, 217, 188, 0.4); }
         }
 
     </style>
 </head>
 <body>
 
+    <!-- NOTIFICATION SYSTEM -->
+    <div id="custom-toast" class="custom-toast"></div>
+
+    <!-- PORTRAIT VERROUILLÉ (ASSISTANCE UTILISATEUR) -->
+    <div id="orientation-helper">
+        <svg class="helper-icon-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+            <path d="M12 18h.01"/>
+            <path d="M17 6a5 5 0 0 0-10 0v2"/>
+            <polyline points="4 5 7 8 10 5"/>
+        </svg>
+        <h2 style="font-size: 20px; font-weight: 800; margin-bottom: 8px;">Mode paysage requis</h2>
+        <p style="font-size: 13px; opacity: 0.8; max-width: 260px;">Veuillez tourner votre appareil à l'horizontale pour tester l'interface de notre borne.</p>
+    </div>
+
     <!-- S1 : ACCUEIL -->
     <div class="screen active" id="s1">
 
-        <!-- VAGUES ANIMÉES — écran 1 uniquement -->
+        <!-- VAGUES ANIMÉES -->
         <div class="ocean-footer">
             <svg class="wave-svg" viewBox="0 0 1000 100" preserveAspectRatio="none">
                 <path d="M0,50 C150,90 350,10 500,50 C650,90 850,10 1000,50 L1000,100 L0,100 Z" fill="rgba(61, 217, 188, 0.08)"></path>
@@ -278,24 +981,30 @@
         </div>
 
         <div class="logo-box">
-            <!-- Utilisation du fichier image local -->
             <img src="Logo.png" class="logo-img" alt="Refeel" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
-            <div style="display:none; font-size: 64px; font-weight: 900; color: var(--mint); letter-spacing: -2px;">Refeel®</div>
+            <div style="display:none; font-size: clamp(32px, 5vw, 64px); font-weight: 900; color: var(--mint); letter-spacing: -2px;">Refeel®</div>
         </div>
         
         <div class="s1-copy">
-            Ton coup de frais. 0% sucre ajouté,<br>
+            Ton coup de frais. 0% sucre,<br>
             <span>Le plaisir du sirop, la légèreté de l'eau.</span>
         </div>
 
-        <button class="liquid-button" onclick="goto(2)">
+        <!-- Servir triggers fullscreen -->
+        <button class="liquid-button" onclick="startAppWithFullscreen()">
             <div class="button-fill" id="btn-fill"></div>
             <span class="btn-label">Servir</span>
         </button>
         
         <div class="stats-strip">
             <div class="ss-item ss-main">
-                <div class="ss-icon-wrap">🥤</div>
+                <div class="ss-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M6 10l1.5 11h9L18 10"/>
+                        <path d="M5 6h14a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V7a1 1 0 0 1 1-1z"/>
+                        <path d="M14 6l1.5-4H18"/>
+                    </svg>
+                </div>
                 <div class="ss-data">
                     <strong id="cup-count">47</strong>
                     <span>gobelets consignés</span>
@@ -320,7 +1029,12 @@
 
     <!-- S2 : SAVEURS -->
     <div class="screen" id="s2">
-        <div class="back-circle" onclick="goto(1)">←</div>
+        <div class="back-circle" onclick="goto(1)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </div>
         <div class="s2-header">
             <h2>Quelle <span style="color:var(--mint)">fraîcheur</span> ?</h2>
         </div>
@@ -329,17 +1043,71 @@
 
     <!-- S3 : PAIEMENT -->
     <div class="screen" id="s3">
-        <div class="back-circle" onclick="goto(2)">←</div>
+        <div class="back-circle" onclick="goto(2)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <line x1="19" y1="12" x2="5" y2="12"></line>
+                <polyline points="12 19 5 12 12 5"></polyline>
+            </svg>
+        </div>
         <div class="pay-module">
+            
+            <!-- Terminal de paiement fictif -->
+            <div class="pay-terminal-overlay" id="terminal-screen">
+                <div class="nfc-animation">
+                    <div class="nfc-wave"></div>
+                    <div class="nfc-wave"></div>
+                    <div class="nfc-icon-wrap" id="nfc-icon-display">
+                        <!-- Default phone SVG -->
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                    </div>
+                </div>
+                <p class="pay-status-text" id="status-title">Approchez votre carte</p>
+                <p class="pay-sub-status" id="status-desc">ou votre smartphone / badge</p>
+            </div>
+
+            <!-- Conteneur saveur -->
             <div class="pay-flavor-img" id="pay-flavor-wrap">
                 <img id="pay-img" src="" alt="">
             </div>
-            <h2 id="pay-name" style="font-size: clamp(20px, 2.2vw, 28px); font-weight: 800;">-</h2>
-            <p style="color: var(--mint-dark); font-weight: 700; margin-top: 5px;">0,40€</p>
+            
+            <div class="pay-details-horizontal">
+                <h2 id="pay-name" style="font-size: clamp(16px, 1.8vw, 24px); font-weight: 800;">-</h2>
+                <p style="color: var(--mint-dark); font-weight: 700; margin-top: 3px; font-size: clamp(14px, 1.5vw, 18px);">0,40€</p>
+            </div>
+
             <div class="pay-methods">
-                <div class="method-item" onclick="startServe()">SANS CONTACT</div>
-                <div class="method-item" onclick="startServe()">CARTE</div>
-                <div class="method-item" onclick="startServe()">BADGE</div>
+                <div class="method-item" onclick="simulatePayment('Sans contact', 'phone')">
+                    <div class="method-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                            <line x1="12" y1="18" x2="12.01" y2="18"/>
+                        </svg>
+                    </div>
+                    <span>SANS CONTACT</span>
+                </div>
+                <div class="method-item" onclick="simulatePayment('Carte Bancaire', 'card')">
+                    <div class="method-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                            <line x1="1" y1="10" x2="23" y2="10"/>
+                        </svg>
+                    </div>
+                    <span>CARTE</span>
+                </div>
+                <div class="method-item" onclick="simulatePayment('Badge Refeel', 'badge')">
+                    <div class="method-icon-wrap">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <circle cx="10" cy="13" r="2"/>
+                            <path d="M6 20a4 4 0 0 1 8 0"/>
+                        </svg>
+                    </div>
+                    <span>BADGE</span>
+                </div>
             </div>
         </div>
     </div>
@@ -354,47 +1122,92 @@
                 </div>
             </div>
             
-            <div class="progress-circle-box">
-                <svg class="circle-svg" width="120" height="120">
-                    <circle class="circle-bg" cx="60" cy="60" r="50"></circle>
-                    <circle class="circle-bar" id="circle-bar" cx="60" cy="60" r="50"></circle>
-                </svg>
-                <div class="timer-text" id="counter">6</div>
+            <div class="progress-side-box">
+                <div class="progress-circle-box">
+                    <svg class="circle-svg" width="90" height="90">
+                        <circle class="circle-bg" cx="45" cy="45" r="40"></circle>
+                        <circle class="circle-bar" id="circle-bar" cx="45" cy="45" r="40"></circle>
+                    </svg>
+                    <div class="timer-text" id="counter">6</div>
+                </div>
+                <p class="filling-label">Préparation en cours</p>
             </div>
-            
-            <p class="filling-label">Préparation en cours</p>
         </div>
     </div>
 
     <!-- S5 : FIN -->
     <div class="screen" id="s5">
-        <div class="success-icon" id="finish-emoji">🍹</div>
-        <h1 class="thanks-title">C'est prêt !</h1>
-        <p class="thanks-sub">Déguste ta boisson bien fraîche.</p>
+        <div class="success-illustration-wrap">
+            <svg viewBox="0 0 100 100" style="width: 120px; height: 120px;">
+                <!-- Rim of glass -->
+                <rect x="24" y="32" width="52" height="5" rx="2.5" fill="var(--dark)" />
+                <!-- Ice Cubes inside -->
+                <rect x="36" y="55" width="12" height="12" rx="2" fill="white" transform="rotate(15 42 61)" opacity="0.6" />
+                <rect x="52" y="65" width="10" height="10" rx="2" fill="white" transform="rotate(-10 57 70)" opacity="0.6" />
+                <!-- Drink dynamic liquid filling -->
+                <path id="success-liquid-path" d="M30 48 L35 83 C35 86, 65 86, 65 83 L70 48 Z" fill="var(--mint)" />
+                <!-- Silhouette outline of glass -->
+                <path d="M28 35 L35 85 C35 89, 65 89, 65 85 L72 35" fill="none" stroke="var(--dark)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+                <!-- Straw -->
+                <path d="M48 45 L62 14 L74 14" fill="none" stroke="var(--dark)" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+        </div>
+        <div class="success-content">
+            <h1 class="thanks-title">C'est prêt !</h1>
+            <p class="thanks-sub">Déguste ta boisson bien fraîche.</p>
 
-        <div class="impact-badge">
-            <span class="badge-icon">🌍</span>
-            <div class="badge-text">
-                <strong>1 bouteille plastique évitée</strong>
-                <small>Bravo — le geste compte.</small>
+            <div class="impact-badge">
+                <div class="badge-icon-wrap">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"/>
+                        <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/>
+                        <path d="M2 12h20"/>
+                    </svg>
+                </div>
+                <div class="badge-text">
+                    <strong>1 bouteille plastique évitée</strong>
+                    <small>Bravo — le geste compte.</small>
+                </div>
+            </div>
+
+            <div>
+                <button class="finish-btn" onclick="goto(1)">RETOUR À L'ACCUEIL</button>
             </div>
         </div>
-
-        <button class="finish-btn" onclick="goto(1)">RETOUR À L'ACCUEIL</button>
         
-        <p style="position:absolute; bottom: 40px; left:0; right:0; font-size: 14px; font-weight: 700; color: var(--mint-dark);">#RefeelYourDay</p>
+        <p style="position:absolute; bottom: 15px; left:0; right:0; font-size: 11px; font-weight: 700; color: var(--mint-dark); letter-spacing: 0.5px;">#RefeelYourDay</p>
     </div>
 
     <script>
+        // DONNÉES DES BOISSONS (SANS ÉMOJI)
         const DATA = [
-            { name: "Citron Gingembre", emoji: "🍋", color: "#FDE047", desc: "Vif, épicé, tonique. Le coup de fouet du matin.", tags: ["Sans sucre", "Naturel"], img: "https://thumbs.dreamstime.com/b/cocktail-au-citron-vert-rafra%C3%AEchissant-avec-de-la-glace-431790760.jpg" },
-            { name: "Hibiscus", emoji: "🌺", color: "#EF4444", desc: "Floral, acidulé, antioxydant. Riche en vitamine C.", tags: ["Antioxydant", "Vitamine C"], img: "https://thumbs.dreamstime.com/b/boisson-rafra%C3%AEchissante-au-th%C3%A9-glac%C3%A9-hibiscus-rouge-garnie-de-feuilles-menthe-et-fleurs-d-%C3%A9t%C3%A9-parfaite-id%C3%A9al-pour-un-une-348014080.jpg" },
-            { name: "Menthe Fraîche", emoji: "🍃", color: "#3DD9BC", desc: "Fraîche, pure, revitalisante. L'hydratation ultime.", tags: ["Digestion", "Ultra frais"], img: "https://media.istockphoto.com/id/183783284/fr/photo/la-menthe-fra%C3%AEche.jpg?s=612x612&w=0&k=20&c=Snu2aMOKwJJqOfr3frdV-ego7FWaaeknh8XgsRsyH3A=" },
-            { name: "Agrumes", emoji: "🍊", color: "#F97316", desc: "Orange, citron, pamplemousse. Un soleil en bouteille.", tags: ["Vitamine C", "Pep's"], img: "https://media.istockphoto.com/id/179210275/photo/oranges-in-water.jpg?s=612x612&w=0&k=20&c=R5hw3Su-xeKSi9sQ9CLob4OInnFlPW-bCzMav6T4FP4=" },
-            { name: "Fruits Rouges", emoji: "🍓", color: "#991B1B", desc: "Cassis, framboise, myrtille. Riche et profond.", tags: ["Antioxydant", "Local"], img: "https://img.freepik.com/photos-premium/boisson-aux-fruits-rafraichissante-froide-baies-groseilles-rouges-dans-flute-verre-transparent-glace-fruits-au-citron-vert-table-bois-clair-fond-blanc_654281-71.jpg" },
-            { name: "Pomme Cannelle", emoji: "🍏", color: "#84CC16", desc: "Doux, réconfortant, parfait après l'effort.", tags: ["Énergie douce", "Hiver"], img: "https://media.istockphoto.com/id/1473429125/fr/photo/pomme-fra%C3%AEche-avec-%C3%A9claboussure-de-jus-de-pomme.jpg?s=612x612&w=0&k=20&c=GEWj2bhxx0xUe2JA-p3Je12uo1afzWX42vldJCT9me4=" }
+            { name: "Citron Gingembre", color: "#FDE047", desc: "Vif, épicé, tonique. Le coup de fouet du matin.", tags: ["Sans sucre", "Naturel"], img: "https://thumbs.dreamstime.com/b/cocktail-au-citron-vert-rafra%C3%AEchissant-avec-de-la-glace-431790760.jpg" },
+            { name: "Hibiscus", color: "#EF4444", desc: "Floral, acidulé, antioxydant. Riche en vitamine C.", tags: ["Antioxydant", "Vitamine C"], img: "https://thumbs.dreamstime.com/b/boisson-rafra%C3%AEchissante-au-th%C3%A9-glac%C3%A9-hibiscus-rouge-garnie-de-feuilles-menthe-et-fleurs-d-%C3%A9t%C3%A9-parfaite-id%C3%A9al-pour-un-une-348014080.jpg" },
+            { name: "Menthe Fraîche", color: "#3DD9BC", desc: "Fraîche, pure, revitalisante. L'hydratation ultime.", tags: ["Digestion", "Ultra frais"], img: "https://media.istockphoto.com/id/183783284/fr/photo/la-menthe-fra%C3%AEche.jpg?s=612x612&w=0&k=20&c=Snu2aMOKwJJqOfr3frdV-ego7FWaaeknh8XgsRsyH3A=" },
+            { name: "Agrumes", color: "#F97316", desc: "Orange, citron, pamplemousse. Un soleil en bouteille.", tags: ["Vitamine C", "Pep's"], img: "https://media.istockphoto.com/id/179210275/photo/oranges-in-water.jpg?s=612x612&w=0&k=20&c=R5hw3Su-xeKSi9sQ9CLob4OInnFlPW-bCzMav6T4FP4=" },
+            { name: "Fruits Rouges", color: "#991B1B", desc: "Cassis, framboise, myrtille. Riche et profond.", tags: ["Antioxydant", "Local"], img: "https://img.freepik.com/photos-premium/boisson-aux-fruits-rafraichissante-froide-baies-groseilles-rouges-dans-flute-verre-transparent-glace-fruits-au-citron-vert-table-bois-clair-fond-blanc_654281-71.jpg" },
+            { name: "Pomme Cannelle", color: "#84CC16", desc: "Doux, réconfortant, parfait après l'effort.", tags: ["Énergie douce", "Hiver"], img: "https://media.istockphoto.com/id/1473429125/fr/photo/pomme-fra%C3%AEche-avec-%C3%A9claboussure-de-jus-de-pomme.jpg?s=612x612&w=0&k=20&c=GEWj2bhxx0xUe2JA-p3Je12uo1afzWX42vldJCT9me4=" }
         ];
 
+        // GESTION DES NOTIFICATIONS PERSONNALISÉES TOAST
+        function showNotification(message, type = 'success') {
+            const toast = document.getElementById('custom-toast');
+            toast.innerText = message;
+            toast.className = 'custom-toast'; // réinitialiser
+            
+            if (type === 'error') {
+                toast.classList.add('error');
+            } else {
+                toast.classList.add('success');
+            }
+            
+            toast.classList.add('show');
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        // RENDER DES CARTES DE SAVEURS
         const grid = document.getElementById('flavor-list');
         DATA.forEach(f => {
             const card = document.createElement('div');
@@ -406,30 +1219,134 @@
                 document.getElementById('pay-img').alt = f.name;
                 document.getElementById('pay-flavor-wrap').style.backgroundColor = f.color;
                 document.getElementById('liquid-fill').style.backgroundColor = f.color;
-                document.getElementById('finish-emoji').innerText = f.emoji;
+                
+                // Colorer le gobelet de fin SVG dynamiquement en fonction de la saveur
+                document.getElementById('success-liquid-path').setAttribute('fill', f.color);
+                
                 goto(3);
             };
             grid.appendChild(card);
         });
+
+        // FORCE LE PLEIN ÉCRAN MOBILE
+        function startAppWithFullscreen() {
+            const docElm = document.documentElement;
+            if (docElm.requestFullscreen) {
+                docElm.requestFullscreen().catch(() => {});
+            } else if (docElm.webkitRequestFullscreen) {
+                docElm.webkitRequestFullscreen().catch(() => {});
+            }
+            goto(2);
+        }
 
         function goto(n) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('s' + n).classList.add('active');
             if(n === 1) {
                 document.getElementById('btn-fill').style.height = '35%';
+                document.getElementById('terminal-screen').classList.remove('active');
             }
         }
 
+        // SIMULATION AUDIO ET VISUELLE DU PAIEMENT
+        function playPaymentBeep() {
+            try {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+
+                oscillator.type = 'sine';
+                oscillator.frequency.setValueAtTime(1200, audioCtx.currentTime); 
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.start();
+                setTimeout(() => {
+                    oscillator.stop();
+                    audioCtx.close();
+                }, 150);
+            } catch (e) {
+                console.log("Audio bloqué ou non géré par l'appareil.");
+            }
+        }
+
+        function simulatePayment(methodName, type) {
+            const overlay = document.getElementById('terminal-screen');
+            const title = document.getElementById('status-title');
+            const desc = document.getElementById('status-desc');
+            const iconWrap = document.getElementById('nfc-icon-display');
+
+            // Switch vector icons instead of emojis
+            let selectedSvg = '';
+            if (type === 'phone') {
+                selectedSvg = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="5" y="2" width="14" height="20" rx="2" ry="2"/>
+                        <line x1="12" y1="18" x2="12.01" y2="18"/>
+                    </svg>`;
+            } else if (type === 'card') {
+                selectedSvg = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <rect x="1" y="4" width="22" height="16" rx="2" ry="2"/>
+                        <line x1="1" y1="10" x2="23" y2="10"/>
+                    </svg>`;
+            } else if (type === 'badge') {
+                selectedSvg = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <circle cy="14" cx="12" r="3"/>
+                    </svg>`;
+            }
+
+            iconWrap.innerHTML = selectedSvg;
+            title.innerText = "Lecture du " + methodName;
+            desc.innerText = "Patientez s'il vous plaît...";
+            overlay.classList.add('active');
+
+            // Phase 1 : Lecture
+            setTimeout(() => {
+                title.innerText = "Autorisation en cours...";
+                desc.innerText = "Communication serveur...";
+            }, 1200);
+
+            // Phase 2 : Succès avec "BIP !"
+            setTimeout(() => {
+                playPaymentBeep();
+                title.innerText = "Paiement Validé !";
+                desc.innerText = "Merci, préparez votre gobelet.";
+                iconWrap.innerHTML = `
+                    <svg viewBox="0 0 24 24" fill="none" stroke="var(--mint)" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round" style="width:36px; height:36px;">
+                        <polyline points="20 6 9 17 4 12"/>
+                    </svg>`;
+                
+                showNotification("Paiement autorisé. Préparation de votre boisson !");
+
+                // Redirection vers le remplissage (S4)
+                setTimeout(() => {
+                    overlay.classList.remove('active');
+                    startServe();
+                }, 1000);
+            }, 2500);
+        }
+
+        // ANIMATION DU REMPLISSAGE (S4)
         function startServe() {
             goto(4);
             let pct = 0;
             let time = 6;
+            
+            const isLandscape = window.innerHeight <= 480;
+            const totalDash = isLandscape ? 188.4 : 251.2; 
+            
             const liquid = document.getElementById('liquid-fill');
             const circle = document.getElementById('circle-bar');
             const count = document.getElementById('counter');
             
-            const totalDash = 314;
             circle.style.strokeDashoffset = totalDash;
+            count.innerText = time;
 
             const timer = setInterval(() => {
                 pct += 1;
@@ -449,6 +1366,7 @@
             }, 60);
         }
 
+        // HOVER EFFECT LIQUID BUTTON
         const liquidBtn = document.querySelector('.liquid-button');
         const btnFill = document.getElementById('btn-fill');
         liquidBtn.addEventListener('mouseenter', () => btnFill.style.height = '100%');
