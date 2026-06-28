@@ -3,6 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="theme-color" content="#0D1F1C">
     <title>Refeel - Fraîcheur Fruitée</title>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
@@ -1067,6 +1071,82 @@
             }
         }
 
+        /* ══ GUIDE PLEIN ÉCRAN iOS ══ */
+        #ios-fs-guide {
+            position: fixed;
+            bottom: max(24px, env(safe-area-inset-bottom, 24px));
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: rgba(13,31,28,0.95);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            color: white;
+            border-radius: 20px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            z-index: 99998;
+            box-shadow: 0 -4px 30px rgba(0,0,0,0.3);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 90vw;
+            width: max-content;
+        }
+        #ios-fs-guide.visible {
+            transform: translateX(-50%) translateY(0);
+        }
+        .ios-guide-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--mint);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        .ios-guide-icon svg {
+            width: 22px;
+            height: 22px;
+            color: var(--dark);
+        }
+        .ios-guide-text strong {
+            display: block;
+            font-size: 13px;
+            font-weight: 800;
+            margin-bottom: 3px;
+        }
+        .ios-guide-text span {
+            font-size: 11px;
+            opacity: 0.7;
+            line-height: 1.4;
+        }
+        .ios-guide-text .share-icon {
+            display: inline-block;
+            background: #007AFF;
+            border-radius: 5px;
+            padding: 1px 5px;
+            font-size: 11px;
+            font-weight: 800;
+            color: white;
+            vertical-align: middle;
+        }
+        .ios-guide-close {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            border: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 700;
+        }
+
         /* HOVER SUR ORDINATEURS */
         @media (hover: hover) {
             .flavor-card:hover { animation-play-state: paused; }
@@ -1083,6 +1163,22 @@
 
     <!-- NOTIFICATION SYSTEM -->
     <div id="custom-toast" class="custom-toast"></div>
+
+    <!-- GUIDE PLEIN ÉCRAN iOS -->
+    <div id="ios-fs-guide">
+        <div class="ios-guide-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/>
+                <polyline points="16 6 12 2 8 6"/>
+                <line x1="12" y1="2" x2="12" y2="15"/>
+            </svg>
+        </div>
+        <div class="ios-guide-text">
+            <strong>Activer le plein écran</strong>
+            <span>Safari → <span class="share-icon">↑</span> → <strong>Ajouter à l'écran d'accueil</strong><br>puis ouvrir depuis l'écran d'accueil</span>
+        </div>
+        <button class="ios-guide-close" onclick="document.getElementById('ios-fs-guide').classList.remove('visible')">✕</button>
+    </div>
 
     <!-- PORTRAIT VERROUILLÉ (ASSISTANCE UTILISATEUR) -->
     <div id="orientation-helper">
@@ -1400,16 +1496,50 @@
             grid.appendChild(card);
         });
 
+        // DÉTECTION iOS ET MODE STANDALONE
+        function isIOS() {
+            return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+        }
+        function isStandalone() {
+            return window.navigator.standalone === true ||
+                   window.matchMedia('(display-mode: standalone)').matches ||
+                   window.matchMedia('(display-mode: fullscreen)').matches;
+        }
+
         // FORCE LE PLEIN ÉCRAN MOBILE
         function startAppWithFullscreen() {
             const docElm = document.documentElement;
-            if (docElm.requestFullscreen) {
-                docElm.requestFullscreen().catch(() => {});
-            } else if (docElm.webkitRequestFullscreen) {
-                docElm.webkitRequestFullscreen().catch(() => {});
+
+            if (isIOS()) {
+                if (!isStandalone()) {
+                    // iOS Safari ne supporte pas requestFullscreen → guider l'utilisateur
+                    const guide = document.getElementById('ios-fs-guide');
+                    guide.classList.add('visible');
+                    // Auto-masquer après 8 secondes
+                    setTimeout(() => guide.classList.remove('visible'), 8000);
+                }
+                // Tenter quand même (iOS 16.4+ commence à le supporter)
+                if (docElm.webkitRequestFullscreen) {
+                    docElm.webkitRequestFullscreen();
+                }
+            } else {
+                // Android / Desktop : fullscreen natif
+                const req = docElm.requestFullscreen || docElm.webkitRequestFullscreen || docElm.mozRequestFullScreen;
+                if (req) req.call(docElm).catch(() => {});
             }
+
             goto(2);
         }
+
+        // Afficher le guide au chargement si iOS et pas en standalone
+        window.addEventListener('load', () => {
+            if (isIOS() && !isStandalone()) {
+                setTimeout(() => {
+                    document.getElementById('ios-fs-guide').classList.add('visible');
+                    setTimeout(() => document.getElementById('ios-fs-guide').classList.remove('visible'), 7000);
+                }, 1500);
+            }
+        });
 
         function goto(n) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
