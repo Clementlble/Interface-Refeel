@@ -1084,6 +1084,121 @@
             .liquid-button:hover { box-shadow: 0 15px 35px rgba(61, 217, 188, 0.4); }
         }
 
+        /* POPUP LANDING PAGE */
+        .landing-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(13, 31, 28, 0.7);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            z-index: 99000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.4s ease;
+        }
+        .landing-popup-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        .landing-popup {
+            background: white;
+            border-radius: 28px;
+            padding: clamp(24px, 3.5vh, 44px) clamp(28px, 4vw, 54px);
+            max-width: clamp(300px, 42vw, 520px);
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 30px 70px rgba(13, 31, 28, 0.25);
+            transform: scale(0.85) translateY(20px);
+            transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+        }
+        .landing-popup-overlay.visible .landing-popup {
+            transform: scale(1) translateY(0);
+        }
+        .popup-close-btn {
+            position: absolute;
+            top: 14px;
+            right: 16px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: #aaa;
+            font-size: 22px;
+            line-height: 1;
+            padding: 4px 8px;
+            border-radius: 50%;
+            transition: color 0.2s, background 0.2s;
+        }
+        .popup-close-btn:hover { color: var(--dark); background: var(--bg-light); }
+        .popup-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            background: var(--mint);
+            color: var(--dark);
+            padding: 5px 14px;
+            border-radius: 100px;
+            font-size: clamp(9px, 0.8vw, 11px);
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: clamp(12px, 1.8vh, 20px);
+        }
+        .popup-title {
+            font-size: clamp(18px, 2.2vw, 30px);
+            font-weight: 900;
+            color: var(--dark);
+            line-height: 1.15;
+            margin-bottom: clamp(8px, 1.2vh, 14px);
+        }
+        .popup-desc {
+            font-size: clamp(11px, 1vw, 14px);
+            color: #5a7a76;
+            font-weight: 500;
+            line-height: 1.55;
+            margin-bottom: clamp(18px, 2.8vh, 32px);
+        }
+        .popup-cta-btn {
+            display: inline-block;
+            background: var(--dark);
+            color: white;
+            padding: clamp(12px, 1.6vh, 16px) clamp(26px, 3.5vw, 44px);
+            border-radius: 100px;
+            font-weight: 800;
+            font-size: clamp(11px, 1vw, 13px);
+            letter-spacing: 0.5px;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+            box-shadow: 0 8px 20px rgba(13,31,28,0.18);
+            transition: transform 0.25s, box-shadow 0.25s;
+        }
+        .popup-cta-btn:hover { transform: scale(1.04); box-shadow: 0 12px 28px rgba(13,31,28,0.24); }
+        .popup-cta-btn:active { transform: scale(0.97); }
+        .popup-skip {
+            display: block;
+            margin-top: clamp(10px, 1.4vh, 16px);
+            font-size: clamp(10px, 0.8vw, 12px);
+            font-weight: 600;
+            color: #aaa;
+            cursor: pointer;
+            background: none;
+            border: none;
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.2s;
+        }
+        .popup-skip:hover { color: var(--dark); }
+
+        @media (orientation: landscape) and (max-height: 480px) {
+            .landing-popup { padding: 16px 24px; border-radius: 18px; }
+            .popup-badge { margin-bottom: 8px; }
+            .popup-desc { margin-bottom: 14px; }
+        }
+
     </style>
 </head>
 <body>
@@ -1358,6 +1473,23 @@
         <p style="position:absolute; bottom: 15px; left:0; right:0; font-size: 11px; font-weight: 700; color: var(--mint-dark); letter-spacing: 0.5px;">#RefeelYourDay</p>
     </div>
 
+    <!-- POPUP LANDING PAGE -->
+    <div class="landing-popup-overlay" id="landing-popup-overlay">
+        <div class="landing-popup">
+            <button class="popup-close-btn" onclick="closePopup()" aria-label="Fermer">&#x2715;</button>
+            <div class="popup-badge">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width:13px;height:13px;">
+                    <circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/>
+                </svg>
+                Découvrir Refeel
+            </div>
+            <h2 class="popup-title">Tu as adoré ton Refeel ?<br>Découvre notre univers.</h2>
+            <p class="popup-desc">Sirops naturels, zéro sucre ajouté, producteurs locaux — retrouve toute l'histoire Refeel sur notre site.</p>
+            <a class="popup-cta-btn" href="https://clementlble.github.io/Refeel/" target="_blank" rel="noopener">Visiter le site Refeel</a>
+            <button class="popup-skip" onclick="closePopup()">Non merci, retour à l'accueil</button>
+        </div>
+    </div>
+
     <script>
         // DONNÉES DES BOISSONS (SANS ÉMOJI)
         const DATA = [
@@ -1426,12 +1558,29 @@
             goto(2);
         }
 
+        let popupTimer = null;
+
+        function openPopup() {
+            document.getElementById('landing-popup-overlay').classList.add('visible');
+        }
+
+        function closePopup() {
+            document.getElementById('landing-popup-overlay').classList.remove('visible');
+            goto(1);
+        }
+
         function goto(n) {
             document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
             document.getElementById('s' + n).classList.add('active');
             if(n === 1) {
                 document.getElementById('btn-fill').style.height = '35%';
                 document.getElementById('terminal-screen').classList.remove('active');
+                document.getElementById('landing-popup-overlay').classList.remove('visible');
+                if (popupTimer) { clearTimeout(popupTimer); popupTimer = null; }
+            }
+            if(n === 5) {
+                if (popupTimer) clearTimeout(popupTimer);
+                popupTimer = setTimeout(openPopup, 1500);
             }
         }
 
